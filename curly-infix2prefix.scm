@@ -11,6 +11,9 @@
 
 ;; use with: kawa curly-infix2prefix.scm file2parse.scm
 
+;; example: kawa curly-infix2prefix.scm ../AI_Deep_Learning/kawa/matrix+.scm > ../AI_Deep_Learning/kawa/matrix.scm
+
+(import (kawa pprint))
 
 (define (literal-read-syntax src)
 
@@ -158,7 +161,7 @@
           ((char=? c #\[ )  ; Implement f[x]
             (read-char port)
             (neoteric-process-tail port
-                  (cons '$bracket-apply$
+                  (cons 'bracket-apply
                     (cons prefix
                       (my-read-delimited-list neoteric-read-real #\] port)))))
           ((char=? c #\{ )  ; Implement f{x}
@@ -430,7 +433,7 @@
             ((char=? c #\( )  ; Vector.
 	     (list->vector (my-read-delimited-list my-read #\) port)))
 
-	    ;; hash table : #hash(("a" . 1) ("b" . 20)) support to write...
+	    ;; hash table : #hash(("a" . 1) ("b" . 20)) support to write... (try to quote it 
 
 	    ((char=? c #\\) (process-char port))
             ; This supports SRFI-30 #|...|#
@@ -440,10 +443,20 @@
             ; and consider "#!" followed by / or . as a comment until "!#".
             ((char=? c #\!) (my-read port) (my-read port))
 	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
-	    ((char=? c #\') (read-error "SRFI-105 REPL : Unsupported #' extension"))
+	    ;; read #:blabla
 	    ((char=? c #\:) (list->string
 			     (append (list #\# #\:)
 				     (read-until-delim port neoteric-delimiters))))
+	    ;; read #'blabla ,deal with syntax objects
+	    ;;((char=? c #\') (list 'syntax (curly-infix-read port)))
+	    ((char=? c #\') (list 'syntax (my-read port)))
+	    ;; deal syntax with backquote, splicing,...
+	    ((char=? c #\`) (list 'quasisyntax (my-read port)))
+	    ((char=? c #\,) (if (char=? (peek-char port) #\@)
+				(begin
+				  (read-char port)
+				  (list 'unsyntax-splicing (my-read port)))
+				(list 'quasisyntax (my-read port))))
 	    (#t (read-error (string-append "SRFI-105 REPL :"
 					   "Unsupported # extension"
 					   " unsupported character causing this message is character:"
@@ -507,12 +520,21 @@
 
 ; parse the input file from command line
 (define cmd-ln (command-line))
-(format #t "The command-line was:~{ ~w~}~%" cmd-ln)
+;;(format #t "The command-line was:~{ ~w~}~%" cmd-ln)
 (define file-name (car (reverse cmd-ln)))
 
-(define code (literal-read-syntax file-name))
+(define code-lst (literal-read-syntax file-name))
 
-(display code) (newline)
+(define (dspp-expr expr)
+  (pprint (write expr))
+  (newline))
 
+(define (dsp-expr expr)
+  (display (write expr))
+  (newline))
+
+;(define do-not-display-result (map dsp-expr code-lst))
+
+(for-each dsp-expr code-lst)
 
 

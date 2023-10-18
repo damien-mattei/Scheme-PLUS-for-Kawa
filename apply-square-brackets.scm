@@ -1,5 +1,5 @@
 
-;; for Racket
+;; for Kawa
 
 ;; This file is part of Scheme+
 
@@ -20,7 +20,7 @@
 
 
 
-;; SRFI 105 : Curly-infix-expressions in conjunction with specialized $bracket-apply$
+;; SRFI 105 : Curly-infix-expressions in conjunction with specialized bracket-apply
 ;; of Scheme+ allows a syntax like {Container[index]} with vectors
 ;; and arrays of any dimensions,size and shape and hash tables
 
@@ -61,16 +61,16 @@
 
 ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10 $ 2 * 4 - 6]}
 ;; '#(3 5)
-(define ($bracket-apply$ container . args-brackets)   ;;  this implements a possible $bracket-apply$ as proposed in SRFI-105
+(define (bracket-apply container . args-brackets)   ;;  this implements a possible bracket-apply as proposed in SRFI-105
 
   ;;(display args-brackets) (newline)
-  ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
+  (bracket-applynext container (parse-square-brackets-arguments args-brackets)))
 
 
 
-(define ($bracket-apply$next container args)  
+(define (bracket-applynext container args)  
 
-  ;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
+  ;(display "apply-square-brackets.* : bracket-applynext : container = ") (display container) (newline)
   
   ;;(display args) (newline)
   (case (length args)
@@ -244,16 +244,24 @@
 					
 					((equal? slice index1-or-keyword-eval) ;; T[$ i2]
 					 (if (< index2-or-keyword-eval 0) ;; negative index
-					     (substring container-eval 0 (+ (string-length container-eval) index2-or-keyword-eval))
-					     (substring container-eval 0 index2-or-keyword-eval)))
+					     (substring container-eval
+							0
+							(+ (string-length container-eval) index2-or-keyword-eval))
+					     (substring container-eval
+							0
+							index2-or-keyword-eval)))
 
 					((equal? slice index2-or-keyword-eval) ;; T[i1 $]
 					 (if (< index1-or-keyword-eval 0) ;; negative index
-					     (substring container-eval (+ (string-length container-eval) index1-or-keyword-eval))
-					     (substring container-eval index1-or-keyword-eval)))
+					     (substring container-eval
+							(+ (string-length container-eval) index1-or-keyword-eval)
+							(string-length container))
+					     (substring container-eval
+							index1-or-keyword-eval
+							(string-length container))))
 					
 					(else ;; syntax error
-					 (error "$bracket-apply$ : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
+					 (error "bracket-apply : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
 
 
 	 
@@ -305,7 +313,7 @@
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "bracket-apply : slice step cannot be zero"))
 		
 		(let* ((size-input (vector-length container-eval))
 		       (size (quotient size-input (abs index3-or-keyword-or-step-eval)))
@@ -379,7 +387,7 @@
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "bracket-apply : slice step cannot be zero"))
 		
 		(let* ((size-input (string-length container-eval))
 		       (size (quotient size-input (abs index3-or-keyword-or-step-eval)))
@@ -436,7 +444,7 @@
 	       
 
 	       (else
-		(error "$bracket-apply$ : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval))))
+		(error "bracket-apply : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval))))
 
 
 	
@@ -465,7 +473,7 @@
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "bracket-apply : slice step cannot be zero"))
 		
 		(let* ((size 0) ;; result size
 		       (result '())
@@ -513,7 +521,7 @@
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "bracket-apply : slice step cannot be zero"))
 		
 		(let* ((size-container-eval (vector-length container-eval))
 		       (i1 (if (< index1-or-keyword-eval 0) ;; negative index
@@ -579,7 +587,7 @@
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "bracket-apply : slice step cannot be zero"))
 		
 		(let* ((size 0)
 		       (result '())
@@ -626,7 +634,7 @@
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
-		      (error "$bracket-apply$ : slice step cannot be zero"))
+		      (error "bracket-apply : slice step cannot be zero"))
 		
 		(let* ((size-container-eval (string-length container-eval))
 		       (i1 (if (< index1-or-keyword-eval 0) ;; negative index
@@ -675,7 +683,7 @@
 	       
 	       ;; T[i1 i2 i3 i4] vector of vectors of vectors ... but we are in string context !!!
 	       (else	
-		(error "$bracket-apply$ : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval))))
+		(error "bracket-apply : in string case, provided too much arguments:" index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval))))
 
 	
 	(else ;; T[i1 i2 i3 i4] ,  4 dimension array
@@ -705,7 +713,7 @@
 	     (begin
 	       
 	       (when (= 0 index5-or-step-eval)
-		 (error "$bracket-apply$ : slice step cannot be zero"))
+		 (error "bracket-apply : slice step cannot be zero"))
 	       
 	       (let* ((size-container-eval (vector-length container-eval))
 		      
@@ -781,7 +789,7 @@
 	     (begin
 	       
 	       (when (= 0 index5-or-step-eval)
-		 (error "$bracket-apply$ : slice step cannot be zero"))
+		 (error "bracket-apply : slice step cannot be zero"))
 	       
 	       (let* ((size-container-eval (string-length container-eval))
 		      
@@ -835,7 +843,7 @@
 	     
 	     ;; T[i1 i2 i3 i4 i5] vector of vectors of vectors ... but we are in string context !!!
 	     
-	     (error "$bracket-apply$ : in string case, provided too much arguments:" index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)))
+	     (error "bracket-apply : in string case, provided too much arguments:" index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)))
 
 	
 	(else ;; T[i1 i2 i3 i4 i5] ,  5 dimension array

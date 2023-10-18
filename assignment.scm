@@ -1,5 +1,5 @@
 
-;; assignment (Racket version)
+;; assignment (Kawa version)
 
 ;; This file is part of Scheme+
 
@@ -41,7 +41,7 @@
 ;; $1 = 7
 ;;
 ;; scheme@(guile-user)> {T[3]}
-;; $bracket-apply$
+;; bracket-apply
 ;; $3 = 7
 ;;
 ;; scheme@(guile-user)> {T[7 2 4] <- 4}
@@ -49,11 +49,11 @@
 ;; $2 = 4
 
 ;; scheme@(guile-user)> {T[3] <- T[7 2 4]}
-;; $bracket-apply$
+;; bracket-apply
 ;; <- : vector or array set!
 ;; $4 = 4
 ;; scheme@(guile-user)> {T[3]}
-;; $bracket-apply$
+;; bracket-apply
 ;; $5 = 4
 
 ;; scheme@(guile-user)> '{x <- y <- 7}
@@ -64,7 +64,7 @@
 ;; > {s[2 * 3 - 4 $ 2 * 3 + 1 $ 2 * 4 - 6] <- "0000"}
 ;; "ab0d0f0h"
 
-;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+;; bracket-apply is from SRFI 105  bracket-apply is an argument of the macro
 (define-syntax <-
   
   (syntax-rules ()
@@ -78,11 +78,11 @@
     
 
     
-    ;;  special form like : (<- ($bracket-apply$ T 3) ($bracket-apply$ T 4))
-    ;; We will let the second $bracket-apply$ be executed and block the execution of first $bracket-apply$.
+    ;;  special form like : (<- (bracket-apply T 3) (bracket-apply T 4))
+    ;; We will let the second bracket-apply be executed and block the execution of first bracket-apply.
     
     ;; one dimension array, example: {a[4] <- 7}
-    ;; $bracket-apply$ is from SRFI 105  bracket-apply is an argument of the macro
+    ;; bracket-apply is from SRFI 105  bracket-apply is an argument of the macro
     ((_ (bracket-apply container index index1 ...) expr)
 
      (begin
@@ -90,9 +90,9 @@
        ;; add a checking
        ;; (define x 3)
        ;; > (<- (aye x 3) 7)
-       ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index) , first argument  'aye " is not $bracket-apply$."
-       (unless (equal? (quote $bracket-apply$) (quote bracket-apply)) 
-	       (error "Bad <- form: the LHS of expression must be an identifier or of the form ($bracket-apply$ container index ...) , first argument is not $bracket-apply$:"
+       ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form (bracket-apply container index) , first argument  'aye " is not bracket-apply."
+       (unless (equal? (quote bracket-apply) (quote bracket-apply)) 
+	       (error "Bad <- form: the LHS of expression must be an identifier or of the form (bracket-apply container index ...) , first argument is not bracket-apply:"
 		      (quote bracket-apply)))
 
        ;;(display "<- : container name:") (display (quote container)) (newline)
@@ -400,11 +400,11 @@
 
   (if (< step 0) ;; with negative index we start at end of vector (like in Python)
       (for ((<+ k i2) (>= k i1) (<- k (+ k step)))
-	   (<- ($bracket-apply$ container-eval k) ($bracket-apply$ expr-eval i))
+	   (<- (bracket-apply container-eval k) (bracket-apply expr-eval i))
 	   (<- i (+ i 1)))
       
       (for ((<+ k i1) (< k i2) (<- k (+ k step)))
-	   (<- ($bracket-apply$ container-eval k) ($bracket-apply$ expr-eval i))
+	   (<- (bracket-apply container-eval k) (bracket-apply expr-eval i))
 	   (<- i (+ i 1)))))
 
 
@@ -456,9 +456,6 @@
 	       (<- index-eval (+ (string-length container-eval) index-eval)))
 	     (string-set! container-eval index-eval expr-eval)
 	     expr-eval)
-
-	    ((flomat? container-eval)
-	     (error "row setting not allowed with flomat"))
 	    
 	    ((array? container-eval)
 	     (array-set! container-eval index-eval expr-eval)
@@ -505,66 +502,63 @@
   ;; 7
   ;; > {a[1 2]}
   ;; 7
-  
-  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos)
+
+  (<+ (i1 i2) (values index1-or-keyword-eval-pos index2-or-keyword-eval-pos))
+  	 
+  ;;  {a <+ (make-vector 7 0)}
+  ;; '#(0 0 0 0 0 0 0)
+  ;; > {a[$ $] <- #(1 2 3)}
+  ;; > a
+  ;; '#(1 2 3 0 0 0 0)
+	
+  (cond ((and (equal? i1 slice) (equal? i2 slice))
+	 (container-copy! container-eval
+			  0
+			  expr-eval)
+	 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 )
 	 
-	 ;;  {a <+ (make-vector 7 0)}
-	 ;; '#(0 0 0 0 0 0 0)
-	 ;; > {a[$ $] <- #(1 2 3)}
-	 ;; > a
-	 ;; '#(1 2 3 0 0 0 0)
-	 ((list (== slice) (== slice))
-	  (container-copy! container-eval
-			   0
-			   expr-eval)
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	  )
+	;;  {s <+ (string-append "abcdefgh")}
+	;; "abcdefgh"
+	;; > {s[3 $] <- "zob"}
+	;; > s
+	;; "abczobgh"
+	;; > 
+	((equal? i2 slice)
+	 (container-copy! container-eval
+			  i1
+			  expr-eval)
+	 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 )
 	 
-	 ;;  {s <+ (string-append "abcdefgh")}
-	 ;; "abcdefgh"
-	 ;; > {s[3 $] <- "zob"}
-	 ;; > s
-	 ;; "abczobgh"
-	 ;; > 
-	 ((list i1 (== slice))
-	  (container-copy! container-eval
-			   i1
-			   expr-eval)
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	  )
+	((equal? i1 slice)
+	 (container-copy! container-eval
+			  0
+			  expr-eval
+			  0
+			  i2)
+	 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 )
 	 
-	 ((list (== slice) i2)
-	  (container-copy! container-eval
-			   0
-			   expr-eval
-			   0
-			   i2)
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	  )
-	 
-	 ((list i1 i2)
+	 (else
+	  ;; returning a value allow the chaining : {T[3 2] <- A[4] <- T[2 4]}
 	  (cond ((vector? container-eval)  ;; normal case
 		 (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2))))
 		((array? container-eval)
 		 ;;(display "assignment.* : 2 args ,array case : container-eval = ") (display container-eval) (newline)
-		 (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
-		((flomat? container-eval) ; flomat
-		 (mset! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
-
+		 '(array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
+		
 		(else ;; overloaded
 		 (define args-lst (list container-eval i1 i2))
 		 (define setter! (find-setter-for-overloaded-square-brackets args-lst))
 		 (setter! container-eval i1 i2 expr-eval)))
-	  expr-eval) ;; returning a value allow the chaining : {T[3 2] <- A[4] <- T[2 4]}
-
-	 ) ;; end match
-
+	  expr-eval)
+		
+	 ) ;; end cond
+  
   )
 
-
-
-
-
+ 
 
 (define (assignment-argument-3 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval)
 
@@ -597,97 +591,95 @@
   (when (and (not (equal? index3-or-keyword-or-step-eval-pos slice))  (< index3-or-keyword-or-step-eval-pos  0))
 	(<- index3-or-keyword-or-step-eval-pos (+ (container-length container-eval)  index3-or-keyword-or-step-eval-pos)))
 
-  
-  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-or-step-eval-pos)
+  (<+ (i1 i2 i3) (values index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-or-step-eval-pos))
+
+  ;; T[$ i2 $]
+  (cond ((and (equal? slice i1) (equal? slice i3))
+	 (container-copy! container-eval
+			  0
+			  expr-eval
+			  0
+			  i2)
 	 
+	 container-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 
-	 ;; T[$ i2 $]
-	 ((list (== slice) i2 (== slice))  (container-copy! container-eval
-							    0
-							    expr-eval
-							    0
-							    i2)
+	 	 
+	;; T[i1 $ $]
+	((and (equal? i2 slice) (equal? i3 slice))
+	 (container-copy! container-eval
+			  i1
+			  expr-eval)
 
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-
-	  )
-
-	 
-	 ;; T[i1 $ $]
-	 ((list i1 (== slice) (== slice))  (container-copy! container-eval
-							    i1
-							    expr-eval)
-
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	  )
-	 
-	 
-	 ;; T[$ $ s3]
-	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; '#(1 2 3 4 5 6 7 8 9)
-	 ;; > {v[$ $ 2] <- (vector 0 0 0 0 0)}
-	 ;; '#(0 2 0 4 0 6 0 8 0)
-	 ;; > {v[$ $ 2] <- (vector -1 -2 -3 -4 -5)}
-	 ;;> v
-	 ;;'#(-1 2 -2 4 -3 6 -4 8 -5)
-	 ((list (== slice) (== slice) step-not-used)
+	  container-eval) ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 	  
-	  (cond ((vector? container-eval)
-		 
-		 (when (= 0 index3-or-keyword-or-step-eval)
-		       (error "assignment : slice step cannot be zero"))
-		 
-		 (let* ((size-input (vector-length container-eval))
-			(i 0))
-		   
-		   (if (< index3-or-keyword-or-step-eval 0) ;; with negative index we start at end of vector (like in Python)
-		       (for ((define k (- size-input 1)) (>= k 0) (set! k (+ k index3-or-keyword-or-step-eval)))
-			    (vector-set! container-eval
-					 k
-					 (vector-ref expr-eval i))
-			    (set! i (+ 1 i)))
-		       
-		       (for ((<+ k  0) (< k  size-input) (<- k  (+ k  index3-or-keyword-or-step-eval)))
-			    (vector-set! container-eval
-					 k
-					 (vector-ref expr-eval i))
-			    (<- i  (+ 1 i)))))
-
-		 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-		 )
-
-		;; > {s <+ (string-append "abcdefgh")}
-		;; "abcdefgh"
-		;; > {s[$ $ 2] <- "0000"}
-		;; > s
-		;; "0b0d0f0h"
-		((string? container-eval)
-		 
-		 (when (= 0 index3-or-keyword-or-step-eval)
-		       (error "assignment : slice step cannot be zero"))
-		 
-		 (let* ((size-input (string-length container-eval))
-			(i 0))
-		   
-		   (if (< index3-or-keyword-or-step-eval 0) ;; with negative index we start at end of string (like in Python)
-		       (for ((<+ k  (- size-input  1)) (>= k 0) (set! k (+ k index3-or-keyword-or-step-eval)))
-			    (string-set! container-eval
-					 k
-					 (string-ref expr-eval i))
-			    (set! i (+ 1 i)))
-		       
-		       (for ((<+ k 0) (< k size-input) (set! k (+ k index3-or-keyword-or-step-eval)))
-			    (string-set! container-eval
-					 k
-					 (string-ref expr-eval i))
-			    (set! i (+ 1 i)))))
-
-		 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-		 )
-
-		(else (error "Slicing only for vector and string."))))
 	 
 	 
+	;; T[$ $ s3]
+	;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	;; '#(1 2 3 4 5 6 7 8 9)
+	;; > {v[$ $ 2] <- (vector 0 0 0 0 0)}
+	;; '#(0 2 0 4 0 6 0 8 0)
+	;; > {v[$ $ 2] <- (vector -1 -2 -3 -4 -5)}
+	;;> v
+	;;'#(-1 2 -2 4 -3 6 -4 8 -5)
+	((and (equal? i1 slice) (equal? i2 slice))
+	 
+	 (cond ((vector? container-eval)
+		
+		(when (= 0 index3-or-keyword-or-step-eval)
+		      (error "assignment : slice step cannot be zero"))
+		
+		(let* ((size-input (vector-length container-eval))
+		       (i 0))
+		  
+		  (if (< index3-or-keyword-or-step-eval 0) ;; with negative index we start at end of vector (like in Python)
+		      (for ((define k (- size-input 1)) (>= k 0) (set! k (+ k index3-or-keyword-or-step-eval)))
+			   (vector-set! container-eval
+					k
+					(vector-ref expr-eval i))
+			   (set! i (+ 1 i)))
+		      
+		      (for ((<+ k  0) (< k  size-input) (<- k  (+ k  index3-or-keyword-or-step-eval)))
+			   (vector-set! container-eval
+					k
+					(vector-ref expr-eval i))
+			   (<- i (+ 1 i)))))
+
+		container-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	       
+
+	       ;; > {s <+ (string-append "abcdefgh")}
+	       ;; "abcdefgh"
+	       ;; > {s[$ $ 2] <- "0000"}
+	       ;; > s
+	       ;; "0b0d0f0h"
+	       ((string? container-eval)
+		
+		(when (= 0 index3-or-keyword-or-step-eval)
+		      (error "assignment : slice step cannot be zero"))
+		
+		(let* ((size-input (string-length container-eval))
+		       (i 0))
+		  
+		  (if (< index3-or-keyword-or-step-eval 0) ;; with negative index we start at end of string (like in Python)
+		      (for ((<+ k  (- size-input  1)) (>= k 0) (set! k (+ k index3-or-keyword-or-step-eval)))
+			   (string-set! container-eval
+					k
+					(string-ref expr-eval i))
+			   (set! i (+ 1 i)))
+		      
+		      (for ((<+ k 0) (< k size-input) (set! k (+ k index3-or-keyword-or-step-eval)))
+			   (string-set! container-eval
+					k
+					(string-ref expr-eval i))
+			   (set! i (+ 1 i)))))
+
+		container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+		)
+
+	       (else (error "Slicing only for vector and string."))))
+	
+	
 
 
 	 ;; T[i1 $ i3]
@@ -699,30 +691,27 @@
 	 ;; > {s[2 $ 4] <- "zo"}
 	 ;; > s
 	 ;; "abzoefgh"
-	 ((list i1 (== slice) i3) (container-copy! container-eval
-						   i1
-						   expr-eval
-						   0
-						   (- i3 i1))
+	 ((equal? i2 slice) (container-copy! container-eval
+					     i1
+					     expr-eval
+					     0
+					     (- i3 i1))
 
-	   container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	   )
+	  container-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	  
 	 
 
 	 ;; T[i1 i2 i3]
-	 ((list i1 i2 i3) 
+	 (else 
 	  
 	  ;; normal case
 	  (if (vector? container-eval)
 	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3))) ;;(array-n-dim-set! array value i1 i2)
 	      (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval))
-
+	  
 	  expr-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 	 
-	 ) ;; end match
-
- 
-  
+	 ) ;; end cond
   )
 
 
@@ -765,34 +754,38 @@
   (when (and (not (equal? index4-or-step-eval-pos slice))  (< index4-or-step-eval-pos  0))
 	(<- index4-or-step-eval-pos  (+ (container-length container-eval)  index4-or-step-eval-pos)))
   
+  (<+ (i1 i2 i3 i4) (values index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-eval-pos index4-or-step-eval-pos))
+
+  (declare is ie)
   
-  (match (list index1-or-keyword-eval-pos index2-or-keyword-eval-pos index3-or-keyword-eval-pos index4-or-step-eval-pos)
-
-	 ;; T[i1 $ i2 $]
-	 ((list i1 (== slice) i2 (== slice)) (<- ($bracket-apply$ container-eval i1 slice i2) expr-eval))
+  ;; T[i1 $ i2 $]
+  (cond ((and (equal? i2 slice) (equal? i4 slice))
+	 (<- is i1)
+	 (<- ie i3)
+	 (<- (bracket-apply container-eval is slice ie) expr-eval))
+	
+	;; T[$ i2 $ s3]
+	;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	;; '#(1 2 3 4 5 6 7 8 9)
+	;; > {v[$ 6 $ 2] <- (vector -1 -2 -3 -4 -5)}
+	;; > v
+	;; '#(-1 2 -2 4 -3 6 7 8 9)
+	((and (equal? i1 slice) (equal? i3 slice))
 	 
-	 ;; T[$ i2 $ s3]
-	 ;; > {v <+ (vector 1 2 3 4 5 6 7 8 9)}
-	 ;; '#(1 2 3 4 5 6 7 8 9)
-	 ;; > {v[$ 6 $ 2] <- (vector -1 -2 -3 -4 -5)}
-	 ;; > v
-	 ;; '#(-1 2 -2 4 -3 6 7 8 9)
-	 ((list (== slice) i2 (== slice) step-not-used)
-
-	  (<+ step index4-or-step-eval)
+	 (<+ step index4-or-step-eval)
 	  
-	  (when (= step 0)
-		(error "assignment : slice step cannot be zero"))
-	  
+	 (when (= step 0)
+	       (error "assignment : slice step cannot be zero"))
+	 
 	  (<+ i 0)
 	  
 	  (if (< step 0) ;; with negative index we start at end of vector (like in Python)
 	      (for ((<+ k i2) (>= k 0) (<- k (+ k step)))
-		   (<- ($bracket-apply$ container-eval k) ($bracket-apply$ expr-eval i))
+		   (<- (bracket-apply container-eval k) (bracket-apply expr-eval i))
 		   (<- i (+ i 1)))
 	      
 	      (for ((<+ k 0) (< k i2) (<- k (+ k step)))
-		   (<- ($bracket-apply$ container-eval k) ($bracket-apply$ expr-eval i))
+		   (<- (bracket-apply container-eval k) (bracket-apply expr-eval i))
 		   (<- i (+ i 1))))
 
 	  container-eval  ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
@@ -801,7 +794,7 @@
 	 
 	 
 	 ;; T[i1 $ $ s3]
-	 ((list i1 (== slice) (== slice) step-not-used)
+	 ((and (equal? i2 slice) (equal? i3 slice))
 
 	  (<+ step index4-or-step-eval)
 
@@ -837,7 +830,7 @@
 	 
 	 
 	 ;; T[i1 i2 i3 i4]
-	 ((list i1 i2 i3 i4) 
+	 (else
 	  
 	  ;; normal case
 	  (if (vector? container-eval)
@@ -846,7 +839,7 @@
 
 	  expr-eval)  ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
 	 
-	 ) ;; end match
+	 ) ;; end cond
   
   )
 
@@ -891,30 +884,43 @@
 
   (when (and (not (equal? index5-or-step-eval-pos slice)) (< index5-or-step-eval-pos 0))
 	(<- index5-or-step-eval-pos (+ (container-length container-eval)  index5-or-step-eval-pos)))
+
+  ;; (display index1-eval-pos) (newline)
+  ;; (display index2-or-keyword-eval-pos) (newline)
+  ;; (display index3-eval-pos) (newline)
+  ;; (display index4-or-keyword-eval-pos) (newline)
+  ;; (display index5-or-step-eval-pos) (newline)
   
+  (<+ (i1 i2 i3 i4 i5) (values index1-eval-pos index2-or-keyword-eval-pos index3-eval-pos index4-or-keyword-eval-pos index5-or-step-eval-pos))
+
+  ;; (display i1) (newline)
+  ;; (display i2) (newline)
+  ;; (display i3) (newline)
+  ;; (display i4) (newline)
+  ;; (display i5) (newline)
   
+  (declare ie)
   
-  (match (list index1-eval-pos index2-or-keyword-eval-pos index3-eval-pos index4-or-keyword-eval-pos index5-or-step-eval-pos)
+  ;; T[i1 $ i2 $ step]
+  ;;  {s <+ (string-append "abcdefgh")}
+  ;; "abcdefgh"
+  ;; > {s[2 $ 7 $ 2] <- "0000"}
+  ;; > s
+  ;; "ab0d0f0h"
+  (cond ((and (equal? i2 slice) (equal? i4 slice))
 
-	 ;; T[i1 $ i2 $ step]
-	 ;;  {s <+ (string-append "abcdefgh")}
-	 ;; "abcdefgh"
-	 ;; > {s[2 $ 7 $ 2] <- "0000"}
-	 ;; > s
-	 ;; "ab0d0f0h"
-	 ((list i1 (== slice) i2 (== slice) step-not-used)
-	  
-	  (<+ step index5-or-step-eval)
+	 (<- ie i3)
+	 (<+ step index5-or-step-eval)
 
-	  (copy-stepped-slice container-eval expr-eval i1 i2 step)
+	 (copy-stepped-slice container-eval expr-eval i1 ie step)
+	 
+	 container-eval  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
 
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
-
-	  )
+	 )
 	 
 	 
 	 ;; T[i1 i2 i3 i4 i5]
-	 ((list i1 i2 i3 i4 i5) 
+	 (else 
 	  
 	  ;; normal case
 	  (if (vector? container-eval)
@@ -923,7 +929,7 @@
 	  
 	  expr-eval)  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
 
-	 ) ;; match
+	 ) ;; cond
   
   ) 
 

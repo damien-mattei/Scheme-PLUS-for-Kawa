@@ -26,10 +26,15 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;; (load "Scheme+.scm")
+;; (load "scheme-infix.scm")
+;; (load "assignment.scm")
+;; (load "apply-square-brackets.scm")
+;; (load "array.scm")
 
 (require 'srfi-1)
+(require 'srfi-69) ;; hash table
 
-;; try include , use include-relative if problems
+;; try include , use include-relative-relative if problems
 (include "rec.scm") ; rec does  not exist in Kawa (no SRFI 31)
 (include "def.scm")
 (include "set-values-plus.scm")
