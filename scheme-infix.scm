@@ -1,6 +1,3 @@
-;;#lang reader "SRFI-105.rkt"
-;;#lang r5rs
-
 ;; infix evaluator with operator precedence
 
 ;;(provide (all-defined-out)) ;; export all bindings
@@ -57,7 +54,8 @@
 	       #f))))
 
 (define (!prec . terms) ;; precursor of !0
-   (!0 infix-operators-lst terms))
+  ;;(display "!prec : version=") (display (car infix-operators-lst)) (newline)
+  (!0 (cdr infix-operators-lst) terms)) ;; cdr skip version number
 
 
  
@@ -79,8 +77,10 @@
 
     ((_ term) term) ;; this infix case is not different than prefix or postfix , useless for infix with precedence
 
+    
     ((_ term1 op term2) (op term1 term2)) ;; no precedence used here , useless for infix with precedence
 
+    
     ((_ ident opspecial term1 op term2) (cond ((or (equal? (quote opspecial) (quote <-)) (equal? (quote opspecial) (quote ←)))
 						 (opspecial  ident (op term1 term2))) ;; {ident <- term1 op term2}
 					      
@@ -88,18 +88,27 @@
 					       (op term2 (opspecial ident term1))) ;; Warning: argument names of macro do not represent the values contained in this case
 					    
 					      (else
+					       ;;(display "$nfx$ : opspecial = ") (display opspecial) (newline)
 					       (!prec
 						;; here we need to eval quote the <- or -> to avoid a bad syntax error with those macros at expansion stage
 						;; but opspecial will never evaluate as a macro at evaluation because it will be a procedure
+						;; in kawa interaction-environment
 						ident (eval (quote opspecial) (interaction-environment)) term1 op term2))))
+    ;;ident (eval (quote opspecial)) term1 op term2))))
+
+
+    
     
 						   
     ((_ ident opspecial term1 op term2 ...) (if (or (equal? (quote opspecial) (quote <-)) (equal? (quote opspecial) (quote ←)))
 				       						
 						;; there is no 'cond here because there is no way to deal with the 2nd case of 'cond above with multiple values unfortunately
 						(opspecial ident ($nfx$ term1 op term2 ...))
-						
-						(!prec ident (eval (quote opspecial) (interaction-environment))  term1 op term2 ...))))) ;; this is in fact a general case ($nfx$ term0 ops term1 op term2 ...)
+
+						(begin
+						  ;;(display "$nfx$ : opspecial = ") (display opspecial) (newline)
+						  ;;(!prec ident (eval (quote opspecial))  term1 op term2 ...)))))
+						  (!prec ident (eval (quote opspecial) (interaction-environment))  term1 op term2 ...)))))) ;; this is in fact a general case ($nfx$ term0 ops term1 op term2 ...)
 
 
 
@@ -202,7 +211,7 @@
   (cond ((null? terms) stack) ; base case
 	;; operator we can evaluate -- pop operator and operand, then recurse
 	((and (> (length stack) 1) ;; (begin
-				   ;;   (display "operators=") (display operators) (newline)
+				   ;;   (display "!** : operators=") (display operators) (newline)
 				   ;;   (let* ((op (car stack))
 				   ;; 	    (mres (memq op operators)))
 				   ;;     (display "op=") (display op) (newline)
@@ -267,44 +276,6 @@
 (define (!*prec terms)   ;; precursor of !*
   (if (null? terms) 
       terms
-      (!* terms infix-operators-lst #f)))
-
-
-
-
-
-;; can you believe they made && and || special forms??? yes :-) but with advantage of being short-circuited,but i admit it has been a headlock for an infix solution 
-;; note: difference between bitwise and logic operator
-
-
-;; a list of lists of operators. lists are evaluated in order, so this also
-;; determines operator precedence
-;;  added bitwise operator with the associated precedences and modulo too
-
-
-;; a list of lists of operators. lists are evaluated in order, so this also
-;; determines operator precedence
-;;  added bitwise operator with the associated precedences and modulo too
-(define infix-operators-lst
-  
-  (list
-   
-   (list expt **)
-   (list * / %)
-   (list + -)
-   
-   (list << >>)
-
-   (list & ∣ ) ;; warning with pipe encoding !!!
-
-					; now this is interesting: because scheme is dynamically typed, we aren't
-					; limited to any one type of function
-   
-   (list < > = ≠ <= >=) ;;  <>  is already defined in Guile
-   
-   
-   ;;(list 'dummy) ;; can keep the good order in case of non left-right assocciative operators.(odd? reverse them) 
-   
-   )
-
-  )
+      (begin
+	;;(display "!*prec : version=") (display (car infix-operators-lst)) (newline)
+	(!* terms (cdr infix-operators-lst) #f)))) ;; cdr skip version number

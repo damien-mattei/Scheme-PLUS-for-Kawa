@@ -52,7 +52,7 @@
 
 
 ;; with a definition inside only the new version works:
-;; (do ((i 1 (1+ i))
+;; (do ((i 1 (+ 1 i))
 ;;      (p 3 (* 3 p)))
 ;;     ((> i 4)
 ;;      p)
@@ -109,21 +109,22 @@
      y)))
 
 
-;; definitions redefined here only to allow 'define in body as allowed in Scheme+
-(define-syntax when
-  (syntax-rules ()
-    ;;((when test result1 result2 ...)
-    ((when test result1  ...)
-     (if test
-         ;;(begin result1 result2 ...)))))
-	 ;;(let () result1 result2 ...)))))
-	 (let () result1 ...)))))
+;; already exit in kawa 
+;; ;; definitions redefined here only to allow 'define in body as allowed in Scheme+
+;; (define-syntax when
+;;   (syntax-rules ()
+;;     ;;((when test result1 result2 ...)
+;;     ((when test result1  ...)
+;;      (if test
+;;          ;;(begin result1 result2 ...)))))
+;; 	 ;;(let () result1 result2 ...)))))
+;; 	 (let () result1 ...)))))
 
-(define-syntax unless
-  (syntax-rules ()
-    ;;((unless test result1 result2 ...)
-    ((unless test result1 ...)
-     (if (not test)
-         ;;(begin result1 result2 ...)))))
-	 ;;(let () result1 result2 ...)))))
-	 (let () result1 ...)))))
+;; (define-syntax unless
+;;   (syntax-rules ()
+;;     ;;((unless test result1 result2 ...)
+;;     ((unless test result1 ...)
+;;      (if (not test)
+;;          ;;(begin result1 result2 ...)))))
+;; 	 ;;(let () result1 result2 ...)))))
+;; 	 (let () result1 ...)))))

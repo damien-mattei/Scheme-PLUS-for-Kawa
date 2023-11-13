@@ -13,6 +13,8 @@
 
 ;; example: kawa curly-infix2prefix.scm ../AI_Deep_Learning/kawa/matrix+.scm > ../AI_Deep_Learning/kawa/matrix.scm
 
+;; kawa curly-infix2prefix4kawa.scm ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
+
 (import (kawa pprint))
 
 (define (literal-read-syntax src)
@@ -127,20 +129,20 @@
 	     ((eq? datum (string->symbol (string #\.))) ;; only this one works with Racket Scheme
                ;;((eq? datum '.) ;; do not works with Racket Scheme
                ;;((eq? datum 'period) ;; this one annihilate the processing: datum will never be equal to 'period !
-                 (let ((datum2 (my-read port)))
-                   (consume-whitespace port)
-                   (cond
-                     ((eof-object? datum2)
-                      (read-error "Early eof in (... .)\n")
-                      '())
-                     ((not (eqv? (peek-char port) stop-char))
-                      (read-error "Bad closing character after . datum"))
-                     (#t
-                       (read-char port)
-                       datum2))))
+	      (let ((datum2 (my-read port)))
+		(consume-whitespace port)
+		(cond
+		 ((eof-object? datum2)
+		  (read-error "Early eof in (... .)\n")
+		  '())
+		 ((not (eqv? (peek-char port) stop-char))
+		  (read-error "Bad closing character after . datum"))
+		 (#t
+		  (read-char port)
+		  datum2))))
                (#t
-                   (cons datum
-                     (my-read-delimited-list my-read stop-char port)))))))))
+		(cons datum
+		      (my-read-delimited-list my-read stop-char port)))))))))
 
 
   ; Implement neoteric-expression's prefixed (), [], and {}.
@@ -215,8 +217,10 @@
           (read-char port)
           (my-read-delimited-list my-read #\) port))
         ((char=? c #\[ )
-          (read-char port)
-          (my-read-delimited-list my-read #\] port))
+	 (default-scheme-read port)) ;; this convert [ ... ] in ($bracket-list$ ...) in Kawa at least allowing Kawa special expressions such as: [1 <: 7]
+
+          ;; (read-char port)
+          ;; (my-read-delimited-list my-read #\] port)) ;; this convert [ ... ] in a list ( ... ) 
         ((char=? c #\{ )
           (read-char port)
           (process-curly
@@ -389,6 +393,7 @@
     (display "Error: ")
     (display message)
     (display "\n")
+    (error message)
     '())
 
   (define (read-number port starting-lyst)

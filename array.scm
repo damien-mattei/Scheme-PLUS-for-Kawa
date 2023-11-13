@@ -1,5 +1,7 @@
 ;; arrays
 
+;; kawa version
+
 ;; This file is part of Scheme+
 
 ;; Copyright 2021-2023 Damien MATTEI
@@ -18,7 +20,25 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+(module-name array)
 
+(require for_next_step)
+
+(export make-array-2d
+	array-2d-ref
+	array-2d-set!
+	create-vector-2d
+	negative-vector-index
+	function-array-n-dim-ref
+	function-array-n-dim-set!
+	display-array-2d
+	dv-2d
+	funct-array-2d-set!
+	funct-array-2d-ref
+	array-ref-set!)
+
+(include "increment.scm")
+	
 
 ;; the value v should be put before in a let to avoid multiple evaluation after macro expand
 (define-syntax make-array-2d
@@ -175,7 +195,7 @@
 (define-syntax array-ref-set!
   (syntax-rules ()
     ((_ array expr x y) (let ((v expr))
-			  (array-set! array v x y)
+			  (array-set! array x y v) ;; as in srfi 25 not guile where v is before indexes !
 			  v))))
 
 
