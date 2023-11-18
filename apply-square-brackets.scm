@@ -255,10 +255,10 @@
 					 (if (< index1-or-keyword-eval 0) ;; negative index
 					     (substring container-eval
 							(+ (string-length container-eval) index1-or-keyword-eval)
-							(string-length container))
+							(string-length container-eval)) ;; container))
 					     (substring container-eval
 							index1-or-keyword-eval
-							(string-length container))))
+							(string-length container-eval)))) ;;container))))
 					
 					(else ;; syntax error
 					 (error "bracket-apply : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))

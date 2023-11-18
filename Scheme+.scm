@@ -25,6 +25,8 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+;; use (require Scheme+)
+
 
 (module-name Scheme+)
 
@@ -56,7 +58,8 @@
 	$>
 	$+>
 	condx
-	<> ≠
+	;;<> ;; should not be compatible with 'cut'
+	≠
 	**
 	<v v>
 	⇜ ⇝
@@ -97,7 +100,8 @@
 
 	infix-operators-lst
 	set-infix-operators-lst!
-	replace-operator!)
+	replace-operator!
+	insert-operator!)
 
 
 ;; try include , use include-relative-relative if problems

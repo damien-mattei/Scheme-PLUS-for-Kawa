@@ -57,7 +57,7 @@
   					; now this is interesting: because scheme is dynamically typed, we aren't
   					; limited to any one type of function
 	
-	(list < > = ≠ <= >= <>)
+	(list < > = ≠ <= >=);; <>)
 	
 	;;(list 'dummy) ;; can keep the good order in case of non left-right assocciative operators.(odd? reverse them) 
 	
@@ -84,8 +84,8 @@
 
 (define (insert-operator! op-old op-new)
   (display "insert-operator! :") (newline)
-  ;; (display op-old) (newline)
-  ;; (display op-new) (newline)
+  (display op-old) (newline)
+  (display op-new) (newline)
   (display infix-operators-lst) (newline)(newline)
   (define version-number (car infix-operators-lst))
   (define new-infix-operators-lst (insert-if-member  infix-operators-lst op-old op-new))
