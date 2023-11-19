@@ -532,11 +532,19 @@
 
 
 
+;; (define-syntax for-each-in
+  
+;;   (syntax-rules ()
+    
+;;     ((_ seq proc) (for-each proc seq))))
+
+
 (define-syntax for-each-in
   
   (syntax-rules ()
     
-    ((_ seq proc) (for-each proc seq))))
+    ((_ (i seq) stmt0 stmt1 ...) (for-each (lambda (i) stmt0 stmt1 ...)
+					   seq))))
 
 
 ;; |kawa:2|# (in-range 5)
