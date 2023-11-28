@@ -15,6 +15,8 @@
 
 ;; kawa curly-infix2prefix4kawa.scm ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
 
+(include "optimize-infix.scm")
+
 (import (kawa pprint))
 
 (define (literal-read-syntax src)
@@ -81,8 +83,10 @@
 
   ; Not a simple infix list - transform it.  Written as a separate procedure
   ; so that future experiments or SRFIs can easily replace just this piece.
-  (define (transform-mixed-infix lyst)
-     (cons '$nfx$ lyst))
+(define (transform-mixed-infix lyst)
+  ;;(display "lyst=") (display lyst) (newline)
+  (!0 infix-operators-lst lyst))
+  ;;(cons '$nfx$ lyst))
 
   ; Given curly-infix lyst, map it to its final internal format.
   (define (process-curly lyst)
