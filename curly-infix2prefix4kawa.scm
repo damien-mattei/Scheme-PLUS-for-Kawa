@@ -1,3 +1,5 @@
+;; infix optimizer with precedence operator by Damien Mattei
+
 
 ;; Copyright (C) 2012 David A. Wheeler and Alan Manuel K. Gloria. All Rights Reserved.
 
