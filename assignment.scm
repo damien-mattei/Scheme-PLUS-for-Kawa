@@ -77,13 +77,8 @@
        (set! kdr (cdr expr))))
     
 
-    
-    ;;  special form like : (<- (bracket-apply T 3) (bracket-apply T 4))
-    ;; We will let the second bracket-apply be executed and block the execution of first bracket-apply.
-    
-    ;; one dimension array, example: {a[4] <- 7}
-    ;; bracket-apply is from SRFI 105  bracket-apply is an argument of the macro
-    ((_ (bracket-apply container index index1 ...) expr)
+    ;; optimised by parser form
+    ((_ (brket-applynext container (lst index index1 ...)) expr)
 
      (begin
 
@@ -91,14 +86,38 @@
        ;; (define x 3)
        ;; > (<- (aye x 3) 7)
        ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form (bracket-apply container index) , first argument  'aye " is not bracket-apply."
-       (unless (equal? (quote bracket-apply) (quote bracket-apply)) 
-	       (error "Bad <- form: the LHS of expression must be an identifier or of the form (bracket-apply container index ...) , first argument is not bracket-apply:"
-		      (quote bracket-apply)))
+       (unless (equal? (quote bracket-applynext) (quote brket-applynext)) 
+	       (error "Bad <- form: the LHS of expression must be an identifier or of the form (bracket-applynext container index ...) , first argument is not bracket-applynext:"
+		      (quote brket-applynext)))
 
        ;;(display "<- : container name:") (display (quote container)) (newline)
        ;;(display "<- : container:") (display container) (newline)
        ;;(display "<- : expr:") (display expr) (newline)
-       (parse-square-brackets-arguments-and-assignment container expr index index1 ...)))
+       (assignmentnext container expr (lst index index1 ...))))
+    
+
+    
+    ;;  special form like : (<- (bracket-apply T 3) (bracket-apply T 4))
+    ;; We will let the second bracket-apply be executed and block the execution of first bracket-apply.
+    
+    ;; one dimension array, example: {a[4] <- 7}
+    ;; bracket-apply is from SRFI 105  bracket-apply is an argument of the macro
+    ((_ (brket-apply container index index1 ...) expr)
+
+     (begin
+
+       ;; add a checking
+       ;; (define x 3)
+       ;; > (<- (aye x 3) 7)
+       ;; . . ../Scheme-PLUS-for-Racket/main/Scheme-PLUS-for-Racket/required-files/assignment.rkt:1:6: Bad <- form: the LHS of expression must be an identifier or of the form (bracket-apply container index) , first argument  'aye " is not bracket-apply."
+       (unless (equal? (quote bracket-apply) (quote brket-apply)) 
+	       (error "Bad <- form: the LHS of expression must be an identifier or of the form (bracket-apply container index ...) , first argument is not bracket-apply:"
+		      (quote brket-apply)))
+
+       ;;(display "<- : container name:") (display (quote container)) (newline)
+       ;;(display "<- : container:") (display container) (newline)
+       ;;(display "<- : expr:") (display expr) (newline)
+       (assignmentnext container expr (parse-square-brackets-arguments (list index index1 ...)))))
     
 
     
@@ -313,9 +332,9 @@
     ((_ expr ...) (v> expr ...))))
      
 
-(define (parse-square-brackets-arguments-and-assignment container expr . args-brackets)
 
-  (<+ args (parse-square-brackets-arguments args-brackets))
+  
+(define (assignmentnext container expr args)
 
   (case (length args)
     ;; 1 argument in [ ]
@@ -368,9 +387,6 @@
     (else
      (assignment-argument-6-and-more container expr args))))
      
-  
-  
-
 
 ;; > (declare x y z)
 ;; > (assign-var (x y z) (1 2 3))

@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 7.1
+;; version 7.3
 
 ;; author: Damien MATTEI
 
@@ -40,6 +40,7 @@
 
 (export def
 	bracket-apply
+	bracket-applynext
 	$
 	for
 	for-basic

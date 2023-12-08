@@ -15,7 +15,23 @@
 
 ;; kawa curly-infix2prefix4kawa.scm ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
 
+;; example with all infixes optimizations:
+
+;; kawa curly-infix2prefix4kawa.scm --infix-optimize --infix-optimize-slice ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa-optim-infix-slice.scm
+
+;; --infix-optimize : optimize the mathematics infix expressions
+
+;; --infix-optimize-slice : optimize the sliced arrays mathematics infix expressions
+
 (include "optimize-infix.scm")
+(include "assignment-light.scm")
+(include "rec.scm")
+(include "block.scm")
+(include "declare.scm")
+(include "slice.scm")
+(include "def.scm")
+(include "optimize-infix-slice.scm")
+
 
 (import (kawa pprint))
 
@@ -85,8 +101,9 @@
   ; so that future experiments or SRFIs can easily replace just this piece.
 (define (transform-mixed-infix lyst)
   ;;(display "lyst=") (display lyst) (newline)
-  (!0 infix-operators-lst lyst))
-  ;;(cons '$nfx$ lyst))
+  (if nfx-optim
+      (!0 infix-operators-lst lyst)
+      (cons '$nfx$ lyst)))
 
   ; Given curly-infix lyst, map it to its final internal format.
   (define (process-curly lyst)
@@ -163,13 +180,20 @@
           ((char=? c #\( ) ; Implement f(x)
             (read-char port)
             (neoteric-process-tail port
-                (cons prefix (my-read-delimited-list neoteric-read-real #\) port))))
+				   (cons prefix (my-read-delimited-list neoteric-read-real #\) port))))
+	  
           ((char=? c #\[ )  ; Implement f[x]
-            (read-char port)
-            (neoteric-process-tail port
+	   (read-char port)
+	   (if slice-optim
+	       (neoteric-process-tail port
+				      (list 'bracket-applynext
+					    prefix
+					    (cons 'list (parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
+	       (neoteric-process-tail port
                   (cons 'bracket-apply
-                    (cons prefix
-                      (my-read-delimited-list neoteric-read-real #\] port)))))
+	   		(cons prefix
+	   		      (my-read-delimited-list neoteric-read-real #\] port))))))
+	  
           ((char=? c #\{ )  ; Implement f{x}
             (read-char port)
             (neoteric-process-tail port
@@ -530,7 +554,34 @@
 ; parse the input file from command line
 (define cmd-ln (command-line))
 ;;(format #t "The command-line was:~{ ~w~}~%" cmd-ln)
+;;(display "cmd-ln=") (display cmd-ln) (newline)
+
+(define options (cdr cmd-ln))
+;;(display "options= ") (display options) (newline)
+
+(when (member "--help" options)
+      (display "curly-infix2prefix4kawa.scm documentation: (see comments in source file for more examples)") (newline) (newline) 
+      (display "kawa curly-infix2prefix4kawa.scm [options] file2parse.scm") (newline) (newline)
+      (display "options:") (newline)(newline)
+      (display "  --infix-optimize : optimize the mathematics infix expressions") (newline) (newline)
+      (display "  --infix-optimize-slice : optimize the sliced arrays mathematics infix expressions")  (newline)
+      (exit))
+
+(define nfx-optim #f)
+(when (member "--infix-optimize" options)
+      (set! nfx-optim #t))
+
+(define slice-optim #f)
+(when (member "--infix-optimize-slice" options)
+      (set! slice-optim #t))
+
+;;(display "nfx-optim=") (display nfx-optim) (newline)
+;;(display "slice-optim=") (display slice-optim) (newline)
+
 (define file-name (car (reverse cmd-ln)))
+
+(when (string=? (substring file-name 0 2) "--")
+      (error "filename start with -- ,this is confusing with options."))
 
 (define code-lst (literal-read-syntax file-name))
 
@@ -540,6 +591,7 @@
 
 (define (dsp-expr expr)
   (display (write expr))
+  (newline)
   (newline))
 
 ;(define do-not-display-result (map dsp-expr code-lst))

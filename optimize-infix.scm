@@ -35,10 +35,10 @@
 (define (!** terms stack operators odd?)
 
 
-  ;; (display "!** : terms = ") (display terms) (newline)
-  ;; (display "!** : operators = ") (display operators) (newline)
-  ;; (display "!** : stack = ") (display stack) (newline)
-  ;; (display "!** : odd? = ") (display odd?) (newline)
+  ;;(display "!** : terms = ") (display terms) (newline)
+  ;;(display "!** : operators = ") (display operators) (newline)
+  ;;(display "!** : stack = ") (display stack) (newline)
+  ;;(display "!** : odd? = ") (display odd?) (newline)
 
 					; why `odd?`? because scheme's list-iteration is forwards-only and
 					; list-construction is prepend-only, every other group of operators is
@@ -83,8 +83,8 @@
 
 ;; evaluate a list of groups of operators in the list of terms
 (define (!* terms operator-groups odd?)
-  ;; (display "!* : terms = ") (display terms) (newline)
-  ;; (display "!* : operator-groups = ") (display operator-groups) (newline)
+  ;;(display "!* : terms = ") (display terms) (newline)
+  ;;(display "!* : operator-groups = ") (display operator-groups) (newline)
   (if (or (null? operator-groups) ; done evaluating all operators
 	  (null? (cdr terms)))    ; only one term left
       terms ; finished processing operator groups
@@ -94,3 +94,11 @@
 	  (cdr operator-groups)
 	  (not odd?))))
 
+
+
+(define (!*prec terms)   ;; precursor of !*
+  (if (null? terms) 
+      terms
+      (begin
+	;;(display "!*prec : version=") (display (car infix-operators-lst)) (newline)
+	(!* terms infix-operators-lst #f))))

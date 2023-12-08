@@ -892,7 +892,7 @@
        (psba (cdr args))) ;; end def, recurse
 
 
-  
+  ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
   (<+ rs  (psba args-brackets))
   ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
   rs
