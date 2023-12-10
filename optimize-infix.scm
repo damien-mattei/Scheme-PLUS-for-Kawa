@@ -13,7 +13,8 @@
 	
 	;;(list 'dummy) ;; can keep the good order in case of non left-right assocciative operators.(odd? reverse them) 
 
-    (<- -> <+ +>)
+    (<- ->)
+    (<+ +>)
     )
 
   )
