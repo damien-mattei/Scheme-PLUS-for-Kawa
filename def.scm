@@ -121,8 +121,8 @@
   (syntax-rules ()
     
     ((_ (var1 ...) expr) (begin
-			   (define-values (var1 ...) expr)
-			   (values var1 ...)))
+			   (define-values (var1 ...) expr)))
+			   ;;(values var1 ...)))
     ;; (begin
     ;;   (define var1 '())
     ;;   ...
@@ -147,13 +147,13 @@
      ((_ (var10 ...)  ... expr)   
     					      (begin
     						(define-values (var10 ...) expr)
-    						...
-    					      expr))
+    						...))
+    					      ;;expr))
 	      
     
-    ((_ var expr) (begin
-		    (define var expr)
-		    var))
+    ((_ var expr) ;;(begin
+		    (define var expr))
+		    ;;var))
     
      ;; > { y <+ z <+ 7 }
      ;; 7
@@ -168,8 +168,8 @@
      ((_ var var1 ... expr) (begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result 
 			      (define var expr)
 			      (define var1 var)
-			      ...
-			      var))
+			      ...))
+			      ;;var))
 
      
     

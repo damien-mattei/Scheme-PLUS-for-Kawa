@@ -25,6 +25,7 @@
 
 ;; --infix-optimize-slice : optimize the sliced arrays mathematics infix expressions
 
+(include "first-and-rest.scm")
 (include "optimize-infix.scm")
 (include "assignment-light.scm")
 (include "rec.scm")
@@ -45,7 +46,7 @@
  
 
 ;; read all the expression of program
- 
+;; DEPRECATED (replace by tail recursive version)
 (define (process-input-code-rec in)
   (define result (curly-infix-read in))  ;; read an expression
   (if (eof-object? result)
@@ -104,7 +105,7 @@
 (define (transform-mixed-infix lyst)
   ;;(display "lyst=") (display lyst) (newline)
   (if nfx-optim
-      (!0 infix-operators-lst lyst)
+      (n-arity (!0 infix-operators-lst lyst))
       (cons '$nfx$ lyst)))
 
   ; Given curly-infix lyst, map it to its final internal format.

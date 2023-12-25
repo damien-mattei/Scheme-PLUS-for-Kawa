@@ -743,7 +743,7 @@
   
   (if proc-search-result
       (car proc-search-result)
-	     (error '$bracket-apply$ "no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list ~a" args-lst)))
+      (error '$bracket-apply$ "no matching found in $ovrld-square-brackets-lst$ : failed with those arguments list ~a" args-lst)))
 
 
 

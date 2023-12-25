@@ -125,10 +125,12 @@
     ;;(<- x 5)
     ((_ var expr)
      
-     (begin
+     (let ((tmp expr))
        ;;(display "<- : variable set!") (newline)
-       (set! var expr)
-       var))
+       ;;(display (quote var)) (display " <- ") (display tmp) (newline)
+       (set! var tmp)
+       ))
+       ;;var))
 
     
     ;; (declare x y z t)
@@ -151,7 +153,14 @@
     
     ((_ var var1 ... expr)
      
-     (<- var (<- var1 ... expr))) 
+     ;;(<- var (<- var1 ... expr)))
+
+     (begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result 
+	(<- var expr)
+	(<- var1 var)
+	...
+	))
+
      
     ))
 
@@ -290,8 +299,13 @@
 
     ((_ (var10 ...) (var11 ...) ... expr)
      
-     (<v (var10 ...) (<v (var11 ...) ... expr)))
-    
+     ;; (<v (var10 ...) (<v (var11 ...) ... expr)))
+     
+    (begin ;; i do not do what the syntax says (assignation not in the good order) but it gives the same result 
+       (<v (var10 ...) expr)
+       (let ((return-values (lambda () (values var10 ...)))) ;; to skip recomputation of expr
+	 (<v (var11 ...) (return-values))
+	 ...)))
 
     ))
 
@@ -441,7 +455,8 @@
 	     (vector-copy! container-eval
 			   0
 			   expr-eval)
-	     container-eval)
+	     ;;container-eval
+	     )
 	    
 	    ((hash-table? container-eval) (error "slicing not permitted with hash table"))
 	    
@@ -449,7 +464,8 @@
 	     (string-copy! container-eval
 			   0
 			   expr-eval)
-	     container-eval)
+	     ;;container-eval
+	     )
 	    (else (error "slicing not allowed with this container")))
 
       
@@ -461,21 +477,25 @@
 	     (when (< index-eval 0) ;; deal with negative index
 	       (<- index-eval (+ (vector-length container-eval) index-eval)))
 	     (vector-set! container-eval index-eval expr-eval)
-	     expr-eval)
+	     ;;expr-eval
+	     )
 	    
 	    ((hash-table? container-eval)
 	     (hash-table-set! container-eval index-eval expr-eval)
-	     expr-eval)
+	     ;;expr-eval
+	     )
 	    
 	    ((string? container-eval)
 	     (when (< index-eval 0) ;; deal with negative index
 	       (<- index-eval (+ (string-length container-eval) index-eval)))
 	     (string-set! container-eval index-eval expr-eval)
-	     expr-eval)
+	     ;;expr-eval
+	     )
 	    
 	    ((array? container-eval)
 	     (array-set! container-eval index-eval expr-eval)
-	     expr-eval) ;; returning a value allow the chaining : {T[3] <- A[4] <- T[7 2 4]}
+	     ;;expr-eval ;; returning a value allow the chaining : {T[3] <- A[4] <- T[7 2 4]}
+	     ) 
 
 	    (else ;; overloaded
 	     (define args-lst (list container-eval index-eval))
@@ -531,7 +551,7 @@
 	 (container-copy! container-eval
 			  0
 			  expr-eval)
-	 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 ;;container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 	 )
 	 
 	;;  {s <+ (string-append "abcdefgh")}
@@ -544,7 +564,7 @@
 	 (container-copy! container-eval
 			  i1
 			  expr-eval)
-	 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 ;;container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 	 )
 	 
 	((equal? i1 slice)
@@ -553,13 +573,14 @@
 			  expr-eval
 			  0
 			  i2)
-	 container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 ;;container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 	 )
 	 
 	 (else
 	  ;; returning a value allow the chaining : {T[3 2] <- A[4] <- T[2 4]}
 	  (cond ((vector? container-eval)  ;; normal case
 		 (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2))))
+
 		((array? container-eval)
 		 ;;(display "assignment.* : 2 args ,array case : container-eval = ") (display container-eval) (newline)
 		 '(array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval expr-eval))
@@ -568,7 +589,8 @@
 		 (define args-lst (list container-eval i1 i2))
 		 (define setter! (find-setter-for-overloaded-square-brackets args-lst))
 		 (setter! container-eval i1 i2 expr-eval)))
-	  expr-eval)
+	  ;;expr-eval
+	  )
 		
 	 ) ;; end cond
   
@@ -617,7 +639,8 @@
 			  0
 			  i2)
 	 
-	 container-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 ;;container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	 ) 
 
 	 	 
 	;; T[i1 $ $]
@@ -626,8 +649,8 @@
 			  i1
 			  expr-eval)
 
-	  container-eval) ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	  
+	  ;;container-eval ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	  )
 	 
 	 
 	;; T[$ $ s3]
@@ -661,8 +684,8 @@
 					(vector-ref expr-eval i))
 			   (<- i (+ 1 i)))))
 
-		container-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	       
+		;;container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+		)
 
 	       ;; > {s <+ (string-append "abcdefgh")}
 	       ;; "abcdefgh"
@@ -690,7 +713,7 @@
 					(string-ref expr-eval i))
 			   (set! i (+ 1 i)))))
 
-		container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+		;;container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
 		)
 
 	       (else (error "Slicing only for vector and string."))))
@@ -713,8 +736,8 @@
 					     0
 					     (- i3 i1))
 
-	  container-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
-	  
+	  ;;container-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	  )
 	 
 
 	 ;; T[i1 i2 i3]
@@ -725,7 +748,8 @@
 	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3))) ;;(array-n-dim-set! array value i1 i2)
 	      (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval expr-eval))
 	  
-	  expr-eval)  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	  ;;expr-eval  ;; returning a value allow the chaining : {T[3 5 6] <- A[4 2 3] <- T[7 2 4]}
+	  )
 	 
 	 ) ;; end cond
   )
@@ -804,7 +828,7 @@
 		   (<- (bracket-apply container-eval k) (bracket-apply expr-eval i))
 		   (<- i (+ i 1))))
 
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
+	  ;;container-eval  ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
 
 	  )
 	 
@@ -839,7 +863,7 @@
 				  (vector-ref expr-eval i))
 		     (set! i (+ 1 i)))))
 
-	  container-eval  ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
+	  ;;container-eval  ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
 
 	  )
 	 
@@ -853,7 +877,8 @@
 	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4))) ;;(array-n-dim-set! array value i1 i2)
 	      (array-set! container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-step-eval expr-eval))
 
-	  expr-eval)  ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
+	  ;;expr-eval ;; returning a value allow the chaining : {T[3 5 6 2] <- A[4 2 3] <- T[2 5]}
+	  )  
 	 
 	 ) ;; end cond
   
@@ -930,7 +955,7 @@
 
 	 (copy-stepped-slice container-eval expr-eval i1 ie step)
 	 
-	 container-eval  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
+	 ;; container-eval  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
 
 	 )
 	 
@@ -943,7 +968,9 @@
 	      (function-array-n-dim-set! container-eval expr-eval (reverse (list i1 i2 i3 i4 i5))) ;;(array-n-dim-set! array expr-eval i1 i2)
 	      (array-set! container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval expr-eval))
 	  
-	  expr-eval)  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
+	  ;; expr-eval ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
+
+	  )  
 
 	 ) ;; cond
   
@@ -962,6 +989,8 @@
       (function-array-n-dim-set! container expr (reverse args)) ;; (array-n-dim-set! array value index1 index2 ...)
       (array-set! container (list->vector args) expr))
   
-  expr)  ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
+  ;; expr ;; returning a value allow the chaining : {T[3 5 6 2 1] <- A[4 2 3] <- T[2 2 4 6 7]}
+
+  )  
 
 
