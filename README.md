@@ -24,10 +24,10 @@
     <p style="text-align: center;">
 	The general documentation of Scheme+ is available here:<br>
   <br>
-  <br>
     <a
   href="https://github.com/damien-mattei/Scheme-PLUS-for-Guile/blob/main/README.md">Scheme+
   general documentation.</a>
+  <br>
   <br>
   Specific documentation for Kawa Scheme:
   <br>
