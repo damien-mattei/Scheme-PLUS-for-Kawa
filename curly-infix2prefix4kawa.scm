@@ -57,10 +57,33 @@
 ;; read all the expression of program
 ;; a tail recursive version
 (define (process-input-code-tail-rec in) ;; in: port
+
+  (define stderr (current-error-port))
+
+  (display "SRFI-105 Curly Infix parser with optimization by Damien MATTEI" stderr) (newline stderr)
+  (display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
+  (display "Options :" stderr) (newline stderr) (newline stderr)
+  (if nfx-optim
+      (display "Infix optimizer is ON." stderr)
+      (display "Infix optimizer is OFF." stderr))
+  (newline stderr)
+
+  (if slice-optim
+      (display "Infix optimizer on sliced containers is ON." stderr)
+      (display "Infix optimizer on sliced containers is OFF." stderr))
+  (newline stderr)
+  (newline stderr)
+  
+  (display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
   
   (define (process-input acc)
     
     (define result (curly-infix-read in))  ;; read an expression
+
+    (display (write result stderr) stderr) ;; without 'write' string delimiters disappears !
+    ;;(display result stderr) 
+    (newline stderr)
+    (newline stderr)
     
     (if (eof-object? result)
 	(reverse acc)
@@ -593,7 +616,8 @@
   (newline))
 
 (define (dsp-expr expr)
-  (display (write expr))
+  (display (write expr)) ;; without 'write' string delimiters disappears !
+  ;;(display expr)
   (newline)
   (newline))
 
