@@ -36,7 +36,7 @@
 (include "optimize-infix-slice.scm")
 
 
-(import (kawa pprint))
+;;(import (kawa pprint))
 
 (define (literal-read-syntax src)
 
@@ -80,8 +80,9 @@
     
     (define result (curly-infix-read in))  ;; read an expression
 
-    (display (write result stderr) stderr) ;; without 'write' string delimiters disappears !
-    ;;(display result stderr) 
+    ;;(display (write result stderr) stderr) ;; without 'write' string delimiters disappears !
+    ;;(display result stderr)
+    (write result stderr)
     (newline stderr)
     (newline stderr)
     
@@ -501,14 +502,18 @@
             ; In a real reader, consider handling "#! whitespace" per SRFI-22,
             ; and consider "#!" followed by / or . as a comment until "!#".
             ((char=? c #\!) (my-read port) (my-read port))
+	    
 	    ((char=? c #\;) (read-error "SRFI-105 REPL : Unsupported #; extension"))
+	    
 	    ;; read #:blabla
 	    ((char=? c #\:) (list->string
 			     (append (list #\# #\:)
 				     (read-until-delim port neoteric-delimiters))))
+	    
 	    ;; read #'blabla ,deal with syntax objects
 	    ;;((char=? c #\') (list 'syntax (curly-infix-read port)))
 	    ((char=? c #\') (list 'syntax (my-read port)))
+	    
 	    ;; deal syntax with backquote, splicing,...
 	    ((char=? c #\`) (list 'quasisyntax (my-read port)))
 	    ((char=? c #\,) (if (char=? (peek-char port) #\@)
@@ -611,9 +616,9 @@
 
 (define code-lst (literal-read-syntax file-name))
 
-(define (dspp-expr expr)
-  (pprint (write expr))
-  (newline))
+;; (define (dspp-expr expr)
+;;   (pprint (write expr))
+;;   (newline))
 
 (define (dsp-expr expr)
   (display (write expr)) ;; without 'write' string delimiters disappears !
@@ -621,8 +626,13 @@
   (newline)
   (newline))
 
+(define (wrt-expr expr)
+  (write expr) ;; without 'write' string delimiters disappears !
+  (newline)
+  (newline))
+
 ;(define do-not-display-result (map dsp-expr code-lst))
 
-(for-each dsp-expr code-lst)
+(for-each wrt-expr code-lst)
 
 
