@@ -64,13 +64,13 @@
 (define (bracket-apply container . args-brackets)   ;;  this implements a possible bracket-apply as proposed in SRFI-105
 
   ;;(display args-brackets) (newline)
-  (bracket-applynext container (parse-square-brackets-arguments args-brackets)))
+  ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
 
 
 
-(define (bracket-applynext container args)  
+(define ($bracket-apply$next container args)  
 
-  ;(display "apply-square-brackets.* : bracket-applynext : container = ") (display container) (newline)
+  ;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
   
   ;;(display args) (newline)
   (case (length args)

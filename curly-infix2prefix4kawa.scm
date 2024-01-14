@@ -213,7 +213,7 @@
 	   (read-char port)
 	   (if slice-optim
 	       (neoteric-process-tail port
-				      (list 'bracket-applynext
+				      (list '$bracket-apply$next
 					    prefix
 					    (cons 'list (parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
 	       (neoteric-process-tail port

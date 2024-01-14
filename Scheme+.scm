@@ -40,7 +40,7 @@
 
 (export def
 	bracket-apply
-	bracket-applynext
+	$bracket-apply$next
 	$
 	for
 	for-basic
