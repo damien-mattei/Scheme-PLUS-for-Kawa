@@ -33,6 +33,8 @@
 (include "def.scm")
 (include "optimize-infix-slice.scm")
 
+(define stderr (current-error-port))
+
 (include "SRFI-105.scm")
 
 
@@ -50,20 +52,19 @@
 
 ;; read all the expression of program
 ;; DEPRECATED (replaced by tail recursive version)
-(define (process-input-code-rec in)
-  (define result (curly-infix-read in))  ;; read an expression
-  (if (eof-object? result)
-      '()
-      (cons result (process-input-code-rec in))))
+;; (define (process-input-code-rec in)
+;;   (define result (curly-infix-read in))  ;; read an expression
+;;   (if (eof-object? result)
+;;       '()
+;;       (cons result (process-input-code-rec in))))
 
 
 ;; read all the expression of program
 ;; a tail recursive version
 (define (process-input-code-tail-rec in) ;; in: port
 
-  (define stderr (current-error-port))
 
-  (display "SRFI-105 Curly Infix parser with optimization by Damien MATTEI" stderr) (newline stderr)
+  (display "SRFI-105 Curly Infix parser with operator precedence by Damien MATTEI" stderr) (newline stderr)
   (display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
 
   (when srfi-105
@@ -72,6 +73,8 @@
 
   (newline stderr) 
 
+  ;;(display slice-optim stderr) (newline stderr) 
+  
   (display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
   
   (define (process-input acc)
@@ -106,12 +109,16 @@
       (display "kawa curly-infix2prefix4kawa.scm [options] file2parse.scm") (newline) (newline)
       (display "options:") (newline)(newline)
       (display "  --srfi-105 : set strict compatibility mode with SRFI-105 ") (newline) (newline)
+      (display "  --kawa : try to parse a code mixing both Kawa range syntax and Scheme+ slicing syntax ") (newline) (newline)
       (exit))
 
 ;; SRFI-105 strict compatibility option
 (when (member "--srfi-105" options)
       (set! nfx-optim #f)
       (set! slice-optim #f))
+
+(when (member "--kawa" options)
+      (set! kawa-compat #t))
 
 
 (define file-name (car (reverse cmd-ln)))

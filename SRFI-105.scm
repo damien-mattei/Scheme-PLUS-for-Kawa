@@ -14,6 +14,7 @@
 
 (define slice-optim #t)
 
+(define kawa-compat #f)
 
   ; ------------------------------
   ; Curly-infix support procedures
@@ -88,51 +89,81 @@
   ; This implements a useful extension: (. b) returns b.
   (define (my-read-delimited-list my-read stop-char port)
     (let*
-      ((c   (peek-char port)))
-      (cond
-        ((eof-object? c) (read-error "EOF in middle of list") '())
-        ((eqv? c #\;)
-          (consume-to-eol port)
-          (my-read-delimited-list my-read stop-char port))
-        ((my-char-whitespace? c)
-          (read-char port)
-          (my-read-delimited-list my-read stop-char port))
-        ((char=? c stop-char)
-          (read-char port)
-          '())
-        ((or (eq? c #\)) (eq? c #\]) (eq? c #\}))
-          (read-char port)
-          (read-error "Bad closing character"))
-        (#t
-          (let ((datum (my-read port)))
-            (cond
-	     ;; processing period . is important for functions with variable numbers of parameters: (fct arg1 . restargs)
-	     ((eq? datum (string->symbol (string #\.))) ;; only this one works with Racket Scheme
-               ;;((eq? datum '.) ;; do not works with Racket Scheme
-               ;;((eq? datum 'period) ;; this one annihilate the processing: datum will never be equal to 'period !
-                 (let ((datum2 (my-read port)))
-                   (consume-whitespace port)
-                   (cond
-                     ((eof-object? datum2)
-                      (read-error "Early eof in (... .)\n")
-                      '())
-                     ((not (eqv? (peek-char port) stop-char))
-                      (read-error "Bad closing character after . datum"))
-                     (#t
+	((c   (peek-char port))
+	 (rv (cond
+              ((eof-object? c) (read-error "EOF in middle of list") '())
+              ((eqv? c #\;)
+               (consume-to-eol port)
+               (my-read-delimited-list my-read stop-char port))
+              ((my-char-whitespace? c)
+               (read-char port)
+               (my-read-delimited-list my-read stop-char port))
+              ((char=? c stop-char)
+               (read-char port)
+               '())
+              ((or (eq? c #\)) (eq? c #\]) (eq? c #\}))
+               (read-char port)
+               (read-error "Bad closing character"))
+	      
+              (#t
+	       
+               (let ((datum (my-read port))
+		     (container '())
+		     (indexs '()))
+		 
+		 (display "my-read-delimited-list : before modification, datum=" stderr) (display datum stderr) (newline stderr)
+
+		 ;; searching for ($bracket-apply$ container index1 index2 ...... )
+		 (when (and (list? datum)
+			    (not (null? datum))
+			    (equal? (car datum) '$bracket-apply$))
+		   (when (null? (cdr datum))
+		     (error "ERROR: my-read-delimited-list : $bracket-apply$ without container : " datum))
+		   (set! container (cadr datum))
+		   (set! indexs (cddr datum))
+		   (set! datum
+			 (list '$bracket-apply$next
+			       container
+			       (cons 'list
+				     (optimizer-parse-square-brackets-arguments indexs)))))
+		 
+		 (display "my-read-delimited-list : after parsing and optimization, datum=" stderr) (display datum stderr) (newline stderr)
+		       
+		 (cond
+		  ;; processing period . is important for functions with variable numbers of parameters: (fct arg1 . restargs)
+		  ((eq? datum (string->symbol (string #\.))) ;; only this one works with Racket Scheme
+		   ;;((eq? datum '.) ;; do not works with Racket Scheme
+		   ;;((eq? datum 'period) ;; this one annihilate the processing: datum will never be equal to 'period !
+                   (let ((datum2 (my-read port)))
+		     (display "datum2=" stderr) (display datum2 stderr) (newline stderr)
+                     (consume-whitespace port)
+                     (cond
+                      ((eof-object? datum2)
+                       (read-error "Early eof in (... .)\n")
+                       '())
+                      ((not (eqv? (peek-char port) stop-char))
+                       (read-error "Bad closing character after . datum"))
+                      (#t
                        (read-char port)
                        datum2))))
-               (#t
+		  
+		  (#t
                    (cons datum
-                     (my-read-delimited-list my-read stop-char port)))))))))
+			 (my-read-delimited-list my-read stop-char port)))))))))
 
+      ;; (display  "my-read-delimited-list return value : " stderr)
+      ;; (display rv stderr)
+      ;; (newline stderr)
+      rv))
 
 
 (define (parser-$bracket-apply$next-arguments port prefix)
 	 ;; create ($bracket-apply$next container (list args1 args2 ...))
 	 (list '$bracket-apply$next
 	       prefix ;; = container
-	       (cons 'list (optimizer-parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
-
+	       (cons 'list
+		     (optimizer-parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
+                                                                       ;; return a list of arguments between [ ]
 
 
 
@@ -152,19 +183,21 @@
             (neoteric-process-tail port
 				   (cons prefix (my-read-delimited-list neoteric-read-real #\) port))))
 
-	   ((char=? c #\[ )  ; Implement f[x]
+	  ((char=? c #\[ )  ; Implement f[x]
+	   (display "SRFI-105 : neoteric-process-tail" stderr) (newline stderr)
 	   (read-char port)
 	   (if slice-optim
 	       
 	       (neoteric-process-tail port
 				      (parser-$bracket-apply$next-arguments port prefix))
 	       
+	       
 	       (neoteric-process-tail port
-                  (cons '$bracket-apply$
-	   		(cons prefix
-	   		      (my-read-delimited-list neoteric-read-real #\] port))))))
+				      (cons 'bracket-apply ;; kawa already use $bracket-apply$ for vectors !
+					    (cons prefix
+						  (my-read-delimited-list neoteric-read-real #\] port))))))
 	  
-          ((char=? c #\{ )  ; Implement f{x}
+	   ((char=? c #\{ )  ; Implement f{x}
             (read-char port)
             (neoteric-process-tail port
               (let ((tail (process-curly
@@ -211,21 +244,42 @@
         ((my-char-whitespace? c)
           (read-char port)
           (my-read port))
+	
         ((char=? c #\( )
-          (read-char port)
-          (my-read-delimited-list my-read #\) port))
+	 ;;(display "SRFI-105 : underlying-read : ( " stderr) (newline stderr)
+	 (read-char port)
+	 (let ((mm (my-read-delimited-list my-read #\) port)))
+	   ;; (display  "my-read-delimited-list ° my-read of port return value : " stderr)
+	   ;; (display mm stderr)
+	   ;; (newline stderr)
+	   mm))
 
         ((char=? c #\[ )
+	 (display "SRFI-105 : underlying-read : [ " stderr) (newline stderr)
+	 (let ((rv '()))
+	   (if kawa-compat
+	       (set! rv (default-scheme-read port)) ;; this convert [ ... ] in ($bracket-list$ ...) in Kawa at least allowing Kawa special expressions such as: [1 <: 7]
+	       (begin
+		  (read-char port)
+		  (my-read-delimited-list my-read #\] port)))
+	   (display  "return value : " stderr)
+	   (display rv stderr)
+	   (newline stderr)
+	   rv))
+	  
 
-	  (default-scheme-read port)) ;; this convert [ ... ] in ($bracket-list$ ...) in Kawa at least allowing Kawa special expressions such as: [1 <: 7]
-
-          ;; (read-char port)
-          ;; (my-read-delimited-list my-read #\] port))
+         
 
 	((char=? c #\{ )
+	  ;;(display "SRFI-105 : underlying-read : { " stderr) (newline stderr)
           (read-char port)
-          (process-curly
-            (my-read-delimited-list neoteric-read-real #\} port)))
+	  (let ((pc (process-curly
+		     (my-read-delimited-list neoteric-read-real #\} port))))
+	    ;; (display "process-curly ° my-read-delimited-list of neoteric-read-real : " stderr)
+	    ;; (display pc stderr)
+	    ;; (newline stderr)
+	    pc))
+	
         ; Handle missing (, [, { :
         ((char=? c #\) )
           (read-char port)
@@ -270,6 +324,8 @@
           (string->symbol (fold-case-maybe port
             (list->string
               (read-until-delim port neoteric-delimiters))))))))
+
+
 
   (define (curly-infix-read-real port)
     (underlying-read curly-infix-read-real port))
@@ -464,11 +520,19 @@
 	    ;; ((char=? c #\l) ;; #lang ...
 	    ;;  (consume-to-eol port)
 	    ;;  (my-read port))
+
+
+	    ;; useless in Kawa
+	    ;; WARNING in Kawa keyword are not of the type #:keyword but keyword: but #:keyword are also considered as keywords 
+	    ;;  and string->keyword will append a : at the end of its argument
+	    ;; so i will use string->symbol (TODO to be tested in real conditions)
 	    
 	    ;; read #:blabla
-	    ((char=? c #\:) (list->string
-			     (append (list #\# #\:)
-				     (read-until-delim port neoteric-delimiters))))
+	    ((char=? c #\:) (string->symbol
+			     (list->string
+			      (append (list #\# #\:)
+				      (read-until-delim port neoteric-delimiters)))))
+
 	    
 	    ;; read #'blabla ,deal with syntax objects
 	    ;;((char=? c #\') (list 'syntax (curly-infix-read port)))
@@ -480,11 +544,22 @@
 				  (read-char port)
 				  (list 'unsyntax-splicing (my-read port)))
 				(list 'quasisyntax (my-read port))))
+
+
+	    ;; Kawa: (utf8->string #u8(#x41))    ->   (utf8->string #u8 (65)) which is acceptable
+	    ((char=? c #\u) 
+	     (string->symbol
+	      (list->string
+	       (append (list #\# #\u)
+		       (read-until-delim port neoteric-delimiters)))))
+
+
 	    (#t (read-error (string-append "SRFI-105 REPL :"
 					   "Unsupported # extension"
 					   " unsupported character causing this message is character:"
 					   (string c)))))))))
 
+	     
 
 
   (define (process-period port)

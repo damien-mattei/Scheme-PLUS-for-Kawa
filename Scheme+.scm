@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 7.4
+;; version 7.5
 
 ;; author: Damien MATTEI
 
@@ -25,7 +25,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; use (require Scheme+)
+;; use : (require Scheme+)
 
 
 (module-name Scheme+)
@@ -41,7 +41,7 @@
 (export def
 	bracket-apply
 	$bracket-apply$next
-	$
+	: ;; $  see slice.scm
 	for
 	for-basic
 	for-next
@@ -59,7 +59,7 @@
 	$>
 	$+>
 	condx
-	;;<> ;; should not be compatible with 'cut'
+	<> ;; should not be compatible with 'cut' (srfi 26)
 	≠
 	**
 	<v v>

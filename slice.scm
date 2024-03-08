@@ -4,6 +4,8 @@
 ;; e-mail: damien.mattei@gmail.com 
 
 
-(define $ '$)
-(define slice $) ;; / , '..)
+;; (define $ '$)
+;; (define slice $) ;; / , '..)
 
+(define : ':)
+(define slice :)
