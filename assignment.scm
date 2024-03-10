@@ -771,7 +771,8 @@
 	 ;; > v
 	 ;; '#(-9 2 -7 4 -5 6 -3 8 -1)
 
-	 ;;> {v <+ (vector 1 2 3 4 5 6 7 8 9)}
+	;;>
+	
 	 ;; > {v[$ $ -2] <- "abcdefghijklmnop"[$ $ 2]}
 	 ;; > v
 	 ;; '#(#\i 2 #\g 4 #\e 6 #\c 8 #\a)
@@ -789,7 +790,7 @@
 		     ;;(vector-copy-slice-with-positive-step container-eval expr-eval 0  size-input  index3-or-keyword-or-step-eval))
 		     (copy-slice-with-positive-step container-eval expr-eval 0  size-input  index3-or-keyword-or-step-eval)))
 
-	       ;; > {s <+ (string-append "abcdefgh")}
+	      
 	       ;; "abcdefgh"
 	       ;;> {s[$ $ 2] <- "ABCD"}
 	       ;;> s
@@ -822,7 +823,7 @@
 	 ;; > s
 	;; "abzoefgh"
 	
-	;; 	 > {v <+ (vector 1 2 3 4)}
+	;;  > {v <+ (vector 1 2 3 4)}
 	 ;; > {v[1 $ 3] <- "abcdef"[2 $ 4]}
 	 ;; > v
 	 ;; '#(1 #\c #\d 4)
