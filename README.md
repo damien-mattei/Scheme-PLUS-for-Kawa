@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 7.3 for Kawa Scheme<br>
+          style="color: #999999;"> <font size="+2">version 7.5 for Kawa Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	The general documentation of Scheme+ is available here:<br>
@@ -36,7 +36,7 @@
   Scheme+ code with this command:<br>
   <br>
   <pre>
-  kawa curly-infix2prefix4kawa.scm --infix-optimize --infix-optimize-slice your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
+  kawa curly-infix2prefix4kawa.scm --kawa your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
 </pre>
   
   </body>
