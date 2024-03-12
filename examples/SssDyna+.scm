@@ -26,8 +26,6 @@
 ;; (load "SssDyna.scm")
 
 
-;; files below can be retrieved here: https://github.com/damien-mattei/library-FunctProg
-
 
 (require Scheme+)
 
