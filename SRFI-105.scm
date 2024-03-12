@@ -111,7 +111,7 @@
 		     (container '())
 		     (indexs '()))
 		 
-		 (display "my-read-delimited-list : before modification, datum=" stderr) (display datum stderr) (newline stderr)
+		 ;;(display "my-read-delimited-list : before modification, datum=" stderr) (display datum stderr) (newline stderr)
 
 		 ;; searching for ($bracket-apply$ container index1 index2 ...... )
 		 (when (and (list? datum)
@@ -127,7 +127,7 @@
 			       (cons 'list
 				     (optimizer-parse-square-brackets-arguments indexs)))))
 		 
-		 (display "my-read-delimited-list : after parsing and optimization, datum=" stderr) (display datum stderr) (newline stderr)
+		 ;;(display "my-read-delimited-list : after parsing and optimization, datum=" stderr) (display datum stderr) (newline stderr)
 		       
 		 (cond
 		  ;; processing period . is important for functions with variable numbers of parameters: (fct arg1 . restargs)
@@ -135,7 +135,7 @@
 		   ;;((eq? datum '.) ;; do not works with Racket Scheme
 		   ;;((eq? datum 'period) ;; this one annihilate the processing: datum will never be equal to 'period !
                    (let ((datum2 (my-read port)))
-		     (display "datum2=" stderr) (display datum2 stderr) (newline stderr)
+		     ;;(display "datum2=" stderr) (display datum2 stderr) (newline stderr)
                      (consume-whitespace port)
                      (cond
                       ((eof-object? datum2)
@@ -184,7 +184,7 @@
 				   (cons prefix (my-read-delimited-list neoteric-read-real #\) port))))
 
 	  ((char=? c #\[ )  ; Implement f[x]
-	   (display "SRFI-105 : neoteric-process-tail" stderr) (newline stderr)
+	   ;;(display "SRFI-105 : neoteric-process-tail" stderr) (newline stderr)
 	   (read-char port)
 	   (if slice-optim
 	       
@@ -255,16 +255,16 @@
 	   mm))
 
         ((char=? c #\[ )
-	 (display "SRFI-105 : underlying-read : [ " stderr) (newline stderr)
+	 ;;(display "SRFI-105 : underlying-read : [ " stderr) (newline stderr)
 	 (let ((rv '()))
 	   (if kawa-compat
 	       (set! rv (default-scheme-read port)) ;; this convert [ ... ] in ($bracket-list$ ...) in Kawa at least allowing Kawa special expressions such as: [1 <: 7]
 	       (begin
 		  (read-char port)
 		  (my-read-delimited-list my-read #\] port)))
-	   (display  "return value : " stderr)
-	   (display rv stderr)
-	   (newline stderr)
+	   ;;(display  "return value : " stderr)
+	   ;;(display rv stderr)
+	   ;;(newline stderr)
 	   rv))
 	  
 
