@@ -4,21 +4,13 @@
 
 (require array)
 
-(import (only (scheme base) (+ orig+) (* orig*)))
-
-(define-overload-existing-operator * orig*)
+(import (only (scheme base) (+ orig+)))
 
 (define-overload-existing-operator + orig+)
 
 (define-overload-procedure random)
 
 (define (random-int n) (integer (* n (random))))
-
-(overload-existing-operator * multiply-matrix-matrix (matrix? matrix?))
-
-(overload-existing-operator * multiply-matrix-vector (matrix? vector?))
-
-(insert-operator! orig* *)
 
 (overload-existing-operator + vector-append (vector? vector?))
 

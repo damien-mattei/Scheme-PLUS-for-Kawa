@@ -2,7 +2,7 @@
 
 (export multiply-matrix-matrix multiply-matrix-vector matrix matrix-v
  create-matrix-by-function dim-matrix matrix-ref matrix-set! matrix-line-ref
- matrix-line-set! vector->matrix-column matrix-column->vector)
+ matrix-line-set! vector->matrix-column matrix-column->vector *)
 
 (require Scheme+)
 

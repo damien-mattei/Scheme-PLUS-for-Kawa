@@ -26,7 +26,7 @@
 	matrix-column->vector
 
 	;;$ovrld-ht$
-	;;*
+	*
 	)
 
 (require Scheme+)

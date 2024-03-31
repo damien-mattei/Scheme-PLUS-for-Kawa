@@ -579,7 +579,7 @@
 		 (proc (car args-lst) (apply proc (cdr args-lst))))
 		(else
 		 ;;(display "else") (newline)
-		 (apply orig-proc args-lst))))
+		 (apply orig-proc args-lst)))) ;; end proc ?
        
        ;;(hash-table-set! $ovrld-ht$ qproc (list (list (list number? number?) orig-proc)))
        (hash-table-set! $ovrld-ht$ qproc '())
