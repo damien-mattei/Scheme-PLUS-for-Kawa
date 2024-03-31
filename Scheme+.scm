@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 7.5
+;; version 7.9
 
 ;; author: Damien MATTEI
 
@@ -8,7 +8,7 @@
 
 ;; Kawa version
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; e-mail: damien.mattei@gmail.com
 
@@ -64,7 +64,7 @@
 	**
 	<v v>
 	⇜ ⇝
-	repeat
+	repeat while do
 	%
 	<< >>
 	& ∣
@@ -105,6 +105,13 @@
 	insert-operator!)
 
 
+(import
+
+    (only (scheme base) (do do-scheme)) ; standard imports and rename do in do-scheme
+
+    )
+
+
 ;; try include , use include-relative-relative if problems
 (include "rec.scm") ; rec does  not exist in Kawa (no SRFI 31)
 (include "def.scm")
@@ -115,7 +122,7 @@
 (include "block.scm")
 (include "not-equal.scm")
 (include "exponential.scm")
-;;(include "while-do-when-unless.scm")
+(include "while-do.scm")
 (include "repeat-until.scm")
 (include "modulo.scm")
 (include "bitwise.scm")

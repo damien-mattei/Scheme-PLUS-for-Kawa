@@ -62,51 +62,51 @@
 
 
 ;; 'do is redefined here only to allow 'define in body as allowed in Scheme+
-(define-syntax do
+;; (define-syntax do
 
-  (syntax-rules ()
+;;   (syntax-rules ()
 
-    ((do ((var init step ...) ...)
+;;     ((do ((var init step ...) ...)
 
-         (test expr ...)
+;;          (test expr ...)
 
-         command ...)
+;;          command ...)
 
-     (letrec
+;;      (letrec
 
-       ((loop
+;;        ((loop
 
-         (lambda (var ...)
+;;          (lambda (var ...)
 
-           (if test
+;;            (if test
 
-               ;;(begin
-	       (let ()
+;;                ;;(begin
+;; 	       (let ()
 
-                 ;;#f ; avoid empty begin but with (let () i don't care !
-		 '() ;; avoid while-do-when-unless.scm: let: bad syntax (missing binding pairs or body) in: (let ())
-                 expr ...)
+;;                  ;;#f ; avoid empty begin but with (let () i don't care !
+;; 		 '() ;; avoid while-do-when-unless.scm: let: bad syntax (missing binding pairs or body) in: (let ())
+;;                  expr ...)
 
-               ;;(begin
-	       (let ()
+;;                ;;(begin
+;; 	       (let ()
 
-                 command
+;;                  command
 
-                 ...
+;;                  ...
 
-                 (loop (do "step" var step ...)
+;;                  (loop (do "step" var step ...)
 
-                       ...))))))
+;;                        ...))))))
 
-       (loop init ...)))
+;;        (loop init ...)))
 
-    ((do "step" x)
+;;     ((do "step" x)
 
-     x)
+;;      x)
 
-    ((do "step" x y)
+;;     ((do "step" x y)
 
-     y)))
+;;      y)))
 
 
 ;; already exit in kawa 
@@ -128,3 +128,46 @@
 ;;          ;;(begin result1 result2 ...)))))
 ;; 	 ;;(let () result1 result2 ...)))))
 ;; 	 (let () result1 ...)))))
+
+
+
+
+;; #|kawa:2|# (define i 0)
+;; #|kawa:3|# (do  (define j i)  (display "toto") (newline) (set! i (+ i 1)) while (< j 4)) 
+;; toto
+;; toto
+;; toto
+;; toto
+;; toto
+;; #|kawa:4|# (do ((i 1 (+ i 1)) (p 3 (* 3 p))) ((> i 4) p)(display p)(newline))
+;; 3
+;; 9
+;; 27
+;; 81
+;; 243
+
+;; #|kawa:5|# (define i 0) 
+;; #|kawa:6|# (do (display "toto") (newline) (set! i (+ i 1)) while (< i 4)) 
+;; toto
+;; toto
+;; toto
+;; toto
+
+(define-syntax do
+  (syntax-rules (while)
+
+    ((do ((variable init step ...) ...) (test expr ...) body ...)
+     (do-scheme ((variable init step ...) ...) (test expr ...) body ...))
+    
+    ((do b1 ...
+       while pred)
+     (let loop () b1 ... (when pred (loop))))))
+
+
+(define-syntax while
+  (syntax-rules ()
+
+    ((while test body ...) (while-guile test
+					(let ()
+					  body
+					  ...)))))

@@ -35,7 +35,7 @@
 
 ;; first stage overloading
 ;(define orig* *)
-(import (rename (scheme base) (* orig*)))
+(import (only (scheme base) (* orig*)))
 
 (define-overload-existing-operator * orig*)
 

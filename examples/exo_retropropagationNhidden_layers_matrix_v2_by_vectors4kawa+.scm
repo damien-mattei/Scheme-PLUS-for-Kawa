@@ -28,8 +28,7 @@
 
 
 ;; first stage overloading
-(import (rename (scheme base) (+ orig+)))
-(import (rename (scheme base) (* orig*)))
+(import (only (scheme base) (+ orig+) (* orig*)))
 
 ;(define orig+ +)
 ;(define orig* *)
