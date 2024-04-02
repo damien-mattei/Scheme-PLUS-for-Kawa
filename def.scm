@@ -179,7 +179,16 @@
 (define-syntax ⥆
   (syntax-rules ()
 
-     ((_ var ...) (<+ var ...))))
+    ((_ var ...) (<+ var ...))))
+
+
+
+
+(define-syntax :+
+  (syntax-rules ()
+
+    ((_ var ...) (<+ var ...))))
+
 
 
 ;; > {(values 2 4 5) +> (x y z) +> (u v w) +> (a b c)} 

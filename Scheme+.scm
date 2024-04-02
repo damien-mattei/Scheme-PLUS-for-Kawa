@@ -51,9 +51,9 @@
 	for-each-in
 	in-range
 	reversed
-	<- ←
+	<- ← :=
 	-> →
-	<+ ⥆
+	<+ ⥆ :+
 	+> ⥅
 	declare
 	$>
