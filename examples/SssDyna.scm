@@ -1,6 +1,8 @@
 (require Scheme+)
 
-(include "../first-and-rest.scm")
+(require (quote srfi-1))
+
+(include "../rest.scm")
 
 (define (one? n) (= n 1))
 
@@ -74,7 +76,7 @@
 
 (def (subset-sum-dyna L t) (declare ls dyn) (<- ls (length L))
  (<- dyn ($bracket-apply$next dyna (list ls t)))
- (if (<> dyn 0) (return (one? dyn)))
+ (when (<> dyn 0) (return (one? dyn)))
  (when (null? L) (<- ($bracket-apply$next dyna (list ls t)) 2) (return #f))
  (<+ c (first L))
  (when (= c t) (<- ($bracket-apply$next dyna (list ls t)) 1) (return #t))
@@ -85,13 +87,27 @@
 
 (def (subset-sum-dynamic L t) (declare ls dyn c R s) (<- ls (length L))
  (<- dyn ($bracket-apply$next dyna (list ls t)))
- (if (<> dyn 0) (return (one? dyn)))
+ (when (<> dyn 0) (return (one? dyn)))
  (when (null? L) (<- ($bracket-apply$next dyna (list ls t)) 2) (return #f))
  (<- c (first L))
  (when (= c t) (<- ($bracket-apply$next dyna (list ls t)) 1) (return #t))
  (<- R (rest L))
  (if (> c t) (<- s (subset-sum-dynamic R t))
   (<- s (or (subset-sum-dynamic R (- t c)) (subset-sum-dynamic R t))))
+ (<- ($bracket-apply$next dyna (list ls t)) (tf->12 s)) s)
+
+(def (subset-sum-dynamic-new-syntax L t) (declare ls dyn c R s)
+ (<- ls (length L)) (<- dyn ($bracket-apply$next dyna (list ls t)))
+ (when (<> dyn 0) (return (one? dyn)))
+ (when (null? L) (<- ($bracket-apply$next dyna (list ls t)) 2) (return #f))
+ (<- c (first L))
+ (when (= c t) (<- ($bracket-apply$next dyna (list ls t)) 1) (return #t))
+ (<- R (rest L))
+ (if (> c t) (let () (<- s (subset-sum-dynamic-new-syntax R t)))
+  (let ()
+   (<- s
+    (or (subset-sum-dynamic-new-syntax R (- t c))
+     (subset-sum-dynamic-new-syntax R t)))))
  (<- ($bracket-apply$next dyna (list ls t)) (tf->12 s)) s)
 
 (define (subset-sum-condx L t) (declare ls dyn) (<- ls (length L))

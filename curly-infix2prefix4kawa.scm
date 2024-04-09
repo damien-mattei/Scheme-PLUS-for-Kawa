@@ -21,8 +21,10 @@
 
 ;; --srfi-105 : set strict compatibility mode with SRFI-105
 
+(require 'srfi-1) ;; for 'third' ...
 
-(include "first-and-rest.scm")
+(include "rest.scm")
+
 (include "operation-redux.scm")
 (include "optimize-infix.scm")
 (include "assignment-light.scm")
@@ -33,7 +35,13 @@
 (include "def.scm")
 (include "optimize-infix-slice.scm")
 
+;;(include "when-unless.rkt")
+(include "while-do.scm")
+
 (define stderr (current-error-port))
+
+(include "condx.scm")
+
 
 (include "SRFI-105.scm")
 
