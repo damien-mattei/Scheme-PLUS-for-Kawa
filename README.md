@@ -43,6 +43,6 @@
   <br>
   </body>
 
-$${\color{red}Due\:to\:bugs\:in the Kawa syntax transformers there will be no more
+$${\color{red}Due\to\bugs\in the Kawa syntax transformers there will be no more
 update of Scheme+ for Kawa.}$$
 
