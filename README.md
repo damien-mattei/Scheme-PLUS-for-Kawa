@@ -39,7 +39,7 @@
   kawa curly-infix2prefix4kawa.scm --kawa your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
 </pre>
 <br>
-<code style="color:red;">Due to bugs in the Kawa syntax transformers there will be no more
-update of Scheme+ for Kawa.</code>
+$${\color{red}Due to bugs in the Kawa syntax transformers there will be no more
+update of Scheme+ for Kawa.}$$
   <br>
   </body>
