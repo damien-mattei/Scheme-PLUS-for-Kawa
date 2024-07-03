@@ -55,6 +55,7 @@
   href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/kawa/matrix%2B.scm">Another
    example
   of Scheme+ code implementing Matrix and multiplication.</a>
+  <br>
   
   <a
   href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/Makefile.Kawa">Example
