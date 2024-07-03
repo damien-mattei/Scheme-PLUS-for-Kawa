@@ -36,9 +36,7 @@
   Scheme+ code with one of  those commands:<br>
   <br>
   <pre>
-  kawa curly-infix2prefix4kawa.scm --srfi-105
-  your_kawa_file_in_scheme+.scm | tr -d '|' >
-  your_kawa_file_in_scheme.scm
+  kawa curly-infix2prefix4kawa.scm --srfi-105 your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
   </pre>
   
   for Scheme+ (with less compatibility with Kawa: <: not allowed in
@@ -50,9 +48,9 @@
 <br>
     <a
   href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa%2B.scm">Example
-  of Scheme+ code.</a>
+  of Scheme+ code for Kawa.</a>
   <br>
-  
+  <br>
    <a
   href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/kawa/matrix%2B.scm">Another
    example
