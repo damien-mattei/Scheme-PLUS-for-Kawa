@@ -1,4 +1,4 @@
-;; Copyright 2022 Damien MATTEI
+;; Copyright 2022-2024 Damien MATTEI
 
 ;; kawa version
 
@@ -17,7 +17,15 @@
 
 
 
-(module-name for_next_step)
+;;(module-name for_next_step)
+
+(define-library (for_next_step) ; R7RS
+
+  (import (kawa base)
+	  (increment))
+	  
+
+
 
 (export for
 	for-basic
@@ -26,12 +34,12 @@
 	for-basic/break-cont
 	for/break-cont
 	for-each-in
-	in-range
-	reversed
+	;;in-range
+	;;reversed
 	)
 
 
-(include "increment.scm")
+
 
 ;; > (for-basic ((k 5)) (display k) (newline))
 ;; 0
@@ -428,6 +436,13 @@
 ;; #|kawa:7|# res
 ;; 2
 
+;; #|kawa:1|# (import (for_next_step))
+;; #|kawa:2|# (for ((define i 0) (< i 3) (set! i (+ 1 i))) (display i) (newline))
+;; /dev/tty:2:58: warning - void-valued expression where value is needed
+;; 0
+;; 1
+;; 2
+;; #!null
 
 
 (define-syntax for
@@ -553,35 +568,35 @@
 ;; (1 2 3 4)
 ;; #|kawa:4|# (in-range 1 5 2)
 ;;(1 3)
-(define (in-range . arg-lst)
-  (define n (length arg-lst))
-  (when (or (= n 0) (> n 3))
-	(error "in-range: bad number of arguments"))
-  (define start 0)
-  (define stop 1)
-  (define step 1)
-  (define res '())
+;; (define (in-range . arg-lst)
+;;   (define n (length arg-lst))
+;;   (when (or (= n 0) (> n 3))
+;; 	(error "in-range: bad number of arguments"))
+;;   (define start 0)
+;;   (define stop 1)
+;;   (define step 1)
+;;   (define res '())
   
-  (case n
-    ((0) (error "in-range : too few arguments"))
-    ((1) (set! stop (car arg-lst)))
-    ((2) (begin (set! start (car arg-lst))
-		(set! stop (cadr arg-lst))))
-    ((3) (begin (set! start (car arg-lst))
-		(set! stop (cadr arg-lst))
-		(when (= 0 step)
-		      (error "in-range: step is equal to zero"))
-		(set! step (caddr arg-lst)))))
+;;   (case n
+;;     ((0) (error "in-range : too few arguments"))
+;;     ((1) (set! stop (car arg-lst)))
+;;     ((2) (begin (set! start (car arg-lst))
+;; 		(set! stop (cadr arg-lst))))
+;;     ((3) (begin (set! start (car arg-lst))
+;; 		(set! stop (cadr arg-lst))
+;; 		(when (= 0 step)
+;; 		      (error "in-range: step is equal to zero"))
+;; 		(set! step (caddr arg-lst)))))
 
-  (define (arret step index stop)
-    (if (> step 0)
-	(< index stop)
-	(> index stop)))
+;;   (define (arret step index stop)
+;;     (if (> step 0)
+;; 	(< index stop)
+;; 	(> index stop)))
   
-  (for ((define i start) (arret step i stop) (set! i (+ step i)))
-       (set! res (cons i res)))
+;;   (for ((define i start) (arret step i stop) (set! i (+ step i)))
+;;        (set! res (cons i res)))
 
-  (reverse res))
+;;   (reverse res))
 
     
 
@@ -630,5 +645,7 @@
 ;; (8 7 6 5 4 3 2)
 ;; #|kawa:8|# (reversed (in-range 8 1 -1))
 
-(define reversed reverse)
+;(define reversed reverse)
+
+) ; end module
 

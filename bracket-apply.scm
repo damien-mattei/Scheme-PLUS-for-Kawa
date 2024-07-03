@@ -3,7 +3,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
+;; TODO: /Users/mattei/Scheme-PLUS-for-Kawa/bracket-apply.scm:445:20: warning - type gnu.lists.AbstractSequence is incompatible with required type abstract-string
 
 ;; SRFI 105 : Curly-infix-expressions in conjunction with specialized bracket-apply
 ;; of Scheme+ allows a syntax like {Container[index]} with vectors
@@ -28,8 +28,9 @@
 ;; (vector-set! T 3 7)
 ;; scheme@(guile-user)> {T[3]}
 ;; $3 = 7
-;; {T[3] <- 7}
-;; 7
+;; {T[3] <- 5}
+;; {T[3]}
+;; 5
 
 ;; scheme@(guile-user)> (define a (make-array 999 '(1 2) '(3 4)))
 ;; scheme@(guile-user)> (array-ref a 2 4)
@@ -61,14 +62,63 @@
 
 ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10 $ 2 * 4 - 6]}
 ;; '#(3 5)
-(define (bracket-apply container . args-brackets)   ;;  this implements a possible bracket-apply as proposed in SRFI-105
+;; (define (bracket-apply container . args-brackets)   ;;  this implements a possible bracket-apply as proposed in SRFI-105
 
-  ;;(display args-brackets) (newline)
-  ($bracket-apply$next container (parse-square-brackets-arguments args-brackets)))
+;;   ;;(display args-brackets) (newline)
+;;   ($bracket-apply$next4list-args container (parse-square-brackets-arguments args-brackets)))
+
+; Kawa already use $bracket-apply$ ...
+(define-library (bracket-apply) ; R7RS
+
+  (import (kawa base)
+	  (srfi 1) ; bug in kawa
+	  (srfi 69); hash table
+	  (parse-square-brackets)
+	  (for_next_step)
+	  (array)
+	  (slice)
+	  (overload))
+	  ;(operators-list))
+
+  (export bracket-apply
+	  $bracket-apply$next)
+
+
+;; (bracket-apply #(0 1 2 3 4) 2)
+;; bracket-apply : #'parsed-args=(#<syntax#1399 list in #2342> 2)
+
+;; 2
+
+;; #|kawa:7|# (define (foo) (bracket-apply #(0 1 2 3 4) 2))
+;; bracket-apply : #'parsed-args=(#<syntax#1402 list in #2350> 2)
+;; #|kawa:8|# (foo)
+;; 2
+(define-syntax bracket-apply  ;;  this implements a possible bracket-apply as proposed in SRFI-105
+  
+  (lambda (stx)
+    
+    (syntax-case stx ()
+
+      ;; a version that pre-compil the infix expression, should be faster
+      ((bracket-apply container arg-bracket ...) ;  . args-brackets
+
+      
+       (with-syntax ((parsed-args
+
+		      (cons #'list 
+		      	    (parse-square-brackets-arguments-lister-syntax #'(arg-bracket ...))))) 
+
+		    (newline)
+		    (display "bracket-apply : #'parsed-args=") (display #'parsed-args) (newline)
+		    
+		    #'($bracket-apply$next4list-args container parsed-args))))))
 
 
 
-(define ($bracket-apply$next container args)  
+
+
+ ; TODO put this also in syntax
+(define ($bracket-apply$next4list-args container args)  
 
   ;(display "apply-square-brackets.* : $bracket-apply$next : container = ") (display container) (newline)
   
@@ -82,23 +132,23 @@
     ((1) (apply-square-brackets-argument-1 container
 					   (first args)))
     ;; 2 arguments in [ ]
-    ;; ex: T[i1 $] , T[$ i2], T[i1 i2] , T[$ $]
+    ;; ex: T[i1 :] , T[: i2], T[i1 i2] , T[: :]
     
-    ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) $]}
+    ;; {#(1 2 3 4 5)[inexact->exact(floor(2.7)) :]}
     ;; '#(3 4 5)
     ((2) (apply-square-brackets-argument-2 container
 					   (first args)
 					   (second args)))
 
     ;; 3 arguments in [ ]
-    ;; T[i1 $ i2] , T[i1 i2 i3] , T[$ $ s]
+    ;; T[i1 : i2] , T[i1 i2 i3] , T[: : s]
     ((3) (apply-square-brackets-argument-3 container
 					   (first args)
 					   (second args)
 					   (third args)))
 
     ;; 4 arguments in [ ]
-    ;; T[$ i2 $ s] , T[i1 $ $ s] , T[i1 $ i3 $] , T[i1 i2 i3 i4]
+    ;; T[: i2 : s] , T[i1 : : s] , T[i1 : i3 :] , T[i1 i2 i3 i4]
     ((4) (apply-square-brackets-argument-4 container
 					   (first args)
 					   (second args)
@@ -106,7 +156,7 @@
 					   (fourth args)))
 
     ;; 5 arguments in [ ]
-    ;; T[i1 $ i3 $ s] , T[i1 i2 i3 i4 i5]
+    ;; T[i1 : i3 : s] , T[i1 i2 i3 i4 i5]
     ((5) (apply-square-brackets-argument-5 container
 					   (first args)
 					   (second args)
@@ -115,10 +165,13 @@
 					   (fifth args)))
     ;; more than 5 arguments in [ ]
     ;; T[i1 i2 i3 i4 i5 i6 ...]
-    (else ;; TODO : put the else case in a function like other cases
-     (if (vector? container)
-	 (function-array-n-dim-ref container (reverse args)) 
-	 (array-ref container (list->vector args))))))   ;; array SRFI 25
+    (else 
+     (apply-square-brackets-argument-6-and-more container args))))
+
+
+(define ($bracket-apply$next container . args)   ;; optimized version
+
+  ($bracket-apply$next4list-args container args))
 
 
 
@@ -137,7 +190,7 @@
  
 
 
-;; {T[$]}
+;; {T[:]}
 ;; '#(1 2 3)
 (define (apply-square-brackets-argument-1 container-eval index-eval)
   
@@ -152,7 +205,7 @@
   ;; 7
   ;; > T
   ;; '#(1 7 3)
-  ;; > {T2 <+ T[$]}
+  ;; > {T2 <+ T[:]}
   ;; '#(1 7 3)
   ;; > {T2[1] <- 0}
   ;; 0
@@ -162,7 +215,7 @@
   ;; '#(1 0 3)
   (cond ((vector? container-eval)
 
-	 (if (equal? slice index-eval) ;; T[$] 
+	 (if (equal? slice index-eval) ;; T[:] 
 	     (vector-copy container-eval) ;; return a copy of vector
 	     (if (< index-eval 0) ;; negative index as in Python
 		 (vector-ref container-eval (+ (vector-length container-eval) index-eval)) ;; negative indexing
@@ -175,7 +228,7 @@
 	;; #\t
 	;; {"toto"[-1]}
 	;; #\o
-	((string? container-eval) (if (equal? slice index-eval) ;; T[$] 
+	((string? container-eval) (if (equal? slice index-eval) ;; T[:] 
 				      (string-copy container-eval) ;; return a copy of the string
 				      (if (< index-eval 0) ;; negative index as in Python
 					  (string-ref container-eval (+ (string-length container-eval) index-eval)) ;; negative indexing
@@ -201,25 +254,25 @@
 
 (define (apply-square-brackets-argument-2 container-eval index1-or-keyword-eval index2-or-keyword-eval)
 
-  (cond ((vector? container-eval) ;; 2 dimension vector ? or 1 dimension vector : T[i1 $] , T[$ i2]
+  (cond ((vector? container-eval) ;; 2 dimension vector ? or 1 dimension vector : T[i1 :] , T[: i2]
 
 
-	 ;; {#(1 2 3 4 5)[2 $]}
+	 ;; {#(1 2 3 4 5)[2 :]}
 	 ;; '#(3 4 5)
 	 ;;
-	 ;; {#(1 2 3 4 5)[$ 3]}
+	 ;; {#(1 2 3 4 5)[: 3]}
 	 ;; '#(1 2 3)
 	 
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: :]
 		     (equal? slice index2-or-keyword-eval))
 		container-eval)
 	       
-	       ((equal? slice index1-or-keyword-eval) ;; T[$ i2]
+	       ((equal? slice index1-or-keyword-eval) ;; T[: i2]
 		(if (< index2-or-keyword-eval 0) ;; negative index
 		    (vector-copy container-eval 0 (+ (vector-length container-eval) index2-or-keyword-eval))
 		    (vector-copy container-eval 0 index2-or-keyword-eval)))
 	       
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 :]
 		(if (< index1-or-keyword-eval 0) ;; negative index
 		    (vector-copy container-eval (+ (vector-length container-eval) index1-or-keyword-eval))
 		    (vector-copy container-eval index1-or-keyword-eval)))
@@ -229,20 +282,20 @@
 	;;(array-n-dim-ref container index1-or-keyword-eval index2-or-keyword-eval)
 
 
-	;; {"hello"[$ 2]}
+	;; {"hello"[: 2]}
 	;; "he"
-	;; {"hello"[3 $]}
+	;; {"hello"[3 :]}
 	;; "lo"
 
-	;; {"hello"[$ $]}
+	;; {"hello"[: :]}
 	;; "hello"
-	;; {"hello"[$]}
+	;; {"hello"[:]}
 	;; "hello"
-	((string? container-eval) (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $]
+	((string? container-eval) (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: :]
 					      (equal? slice index2-or-keyword-eval))
 					 container-eval)
 					
-					((equal? slice index1-or-keyword-eval) ;; T[$ i2]
+					((equal? slice index1-or-keyword-eval) ;; T[: i2]
 					 (if (< index2-or-keyword-eval 0) ;; negative index
 					     (substring container-eval
 							0
@@ -251,7 +304,7 @@
 							0
 							index2-or-keyword-eval)))
 
-					((equal? slice index2-or-keyword-eval) ;; T[i1 $]
+					((equal? slice index2-or-keyword-eval) ;; T[i1 :]
 					 (if (< index1-or-keyword-eval 0) ;; negative index
 					     (substring container-eval
 							(+ (string-length container-eval) index1-or-keyword-eval)
@@ -261,7 +314,7 @@
 							(string-length container-eval)))) ;;container))))
 					
 					(else ;; syntax error
-					 (error "bracket-apply : bad arguments in string case,expecting $ i2 or i1 $, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
+					 (error "bracket-apply : bad arguments in string case,expecting : i2 or i1 :, provided :" index1-or-keyword-eval index2-or-keyword-eval) )))
 
 
 	 
@@ -298,18 +351,18 @@
 
 (define (apply-square-brackets-argument-3 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-or-step-eval)
 
-  ;; {#(1 2 3 4 5 6 7)[2 $ 5]}
+  ;; {#(1 2 3 4 5 6 7)[2 : 5]}
   ;; '#(3 4 5)
-  ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 $ 3 * 5 - 10]}
+  ;; {#(1 2 3 4 5 6 7)[2 * 5 - 8 : 3 * 5 - 10]}
   ;; '#(3 4 5)
-  (cond ((vector? container-eval) ;; 3 dimension vector T[i1 i2 i3]? or T[i1 $ i3] or T[$ $ step] or  T[$ i2 $] or  T[i1 $ $]
+  (cond ((vector? container-eval) ;; 3 dimension vector T[i1 i2 i3]? or T[i1 : i3] or T[: : step] or  T[: i2 :] or  T[i1 : :]
 
-	 ;; {#(1 2 3 4 5 6 7 8)[$ $ 3]}
+	 ;; {#(1 2 3 4 5 6 7 8)[: : 3]}
 	 ;; '#(1 4 7)
 
-	 ;; {#(1 2 3 4 5 6 7 8)[$ $ -2]}
+	 ;; {#(1 2 3 4 5 6 7 8)[: : -2]}
 	 ;; '#(8 6 4 2)
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $ step]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: : step]
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
@@ -339,7 +392,7 @@
 		  result))
 	       
 
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ i3]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : i3]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (vector-length container-eval) index1-or-keyword-eval)))
@@ -350,7 +403,7 @@
 		(vector-copy container-eval index1-or-keyword-eval index3-or-keyword-or-step-eval))
 
 
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ $]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : :]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (vector-length container-eval) index1-or-keyword-eval)))
@@ -358,7 +411,7 @@
 		(vector-copy container-eval index1-or-keyword-eval))
 	       
 	       
-	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[$ i2 $]
+	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[: i2 :]
 		
 		(when (< index2-or-keyword-eval 0) ;; negative index
 		      (set! index2-or-keyword-eval (+ (vector-length container-eval) index2-or-keyword-eval)))
@@ -373,17 +426,17 @@
 	;;or use array-n-dim-ref macro
 
 
-	;; {"elephant"[2 $ 5]}
+	;; {"elephant"[2 : 5]}
 	;; "eph"
-	;;  {"abcdefghijkl"[$ $ 2]}
+	;;  {"abcdefghijkl"[: : 2]}
 	;; "acegik"
-	;; {"abcdefghijkl"[$ $ -3]}
+	;; {"abcdefghijkl"[: : -3]}
 	;; "lifc"
-	;; {"123456789"[ $  $ -1]}
+	;; {"123456789"[ :  : -1]}
 	;; "987654321"
-	((string? container-eval) ;;  T[$ $ step] or T[i1 $ i3] or error
+	((string? container-eval) ;;  T[: : step] or T[i1 : i3] or error
 	 
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ $ step]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: : step]
 		     (equal? slice index2-or-keyword-eval))
 
 		(when (= 0 index3-or-keyword-or-step-eval)
@@ -413,7 +466,7 @@
 		  
 		  result))
 	       
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ i3]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : i3]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (vector-length container-eval) index1-or-keyword-eval)))
@@ -425,7 +478,7 @@
 
 
 	       
-	       ((equal? slice index2-or-keyword-eval) ;; T[i1 $ $]
+	       ((equal? slice index2-or-keyword-eval) ;; T[i1 : :]
 		
 		(when (< index1-or-keyword-eval 0) ;; negative index
 		      (set! index1-or-keyword-eval (+ (string-length container-eval) index1-or-keyword-eval)))
@@ -434,7 +487,7 @@
 	       
 	       
 
-	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[$ i2 $]
+	       ((and (equal? slice index1-or-keyword-eval)  (equal? slice index3-or-keyword-or-step-eval)) ;; T[: i2 :]
 		
 		(when (< index2-or-keyword-eval 0) ;; negative index
 		      (set! index2-or-keyword-eval (+ (string-length container-eval) index2-or-keyword-eval)))
@@ -454,22 +507,22 @@
 
 
 
-;; {"123456789"[3 $  $ -2]}
+;; {"123456789"[3 :  : -2]}
 ;; "42"
 (define (apply-square-brackets-argument-4 container-eval index1-or-keyword-eval index2-or-keyword-eval index3-or-keyword-eval index4-or-keyword-or-step-eval)
 
   
   (cond ((vector? container-eval)
 
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ 7 $ 2]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: 7 : 2]}
 	 ;; '#(1 3 5 7)
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ 6 $ -1]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: 6 : -1]}
 	 ;; '#(6 5 4 3 2 1)
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ 6 $ -2]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: 6 : -2]}
 	 ;; '#(6 4 2)
-	 ;; {#(1 2 3 4 5 6 7 8 9)[$ -3 $ -2]}
+	 ;; {#(1 2 3 4 5 6 7 8 9)[: -3 : -2]}
 	 ;; '#(6 4 2)
-	 (cond ((and (equal? slice index1-or-keyword-eval)  ;; T[$ i2 $ s]
+	 (cond ((and (equal? slice index1-or-keyword-eval)  ;; T[: i2 : s]
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -509,15 +562,15 @@
 
 
 
-	       ;; {#(1 2 3 4 5 6 7 8 9)[3 $ $ 2]}
+	       ;; {#(1 2 3 4 5 6 7 8 9)[3 : : 2]}
 	       ;; '#(4 6 8)
-	       ;; > {#(1 2 3 4 5 6 7 8 9)[3 $ $ -2]}
+	       ;; > {#(1 2 3 4 5 6 7 8 9)[3 : : -2]}
 	       ;; '#(4 2)
-	       ;; > {#(1 2 3 4 5 6 7 8 9)[-3 $ $ 2]}
+	       ;; > {#(1 2 3 4 5 6 7 8 9)[-3 : : 2]}
 	       ;; '#(7 9)
-	       ;; {#(1 2 3 4 5 6 7 8 9)[-3 $ $ -2]}
+	       ;; {#(1 2 3 4 5 6 7 8 9)[-3 : : -2]}
 	       ;; '#(7 5 3 1)
-	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ $ s]
+	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 : : s]
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -556,7 +609,7 @@
 		  result))
 
 
-	       ((and (equal? index2-or-keyword-eval slice) ;; T[i1 $ i3 $]
+	       ((and (equal? index2-or-keyword-eval slice) ;; T[i1 : i3 :]
 		     (equal? index4-or-keyword-or-step-eval slice))
 
 		(let ((i1 index1-or-keyword-eval)
@@ -575,15 +628,15 @@
 
 	
 	
-	;; {"123456789"[$ -3 $ -2]}
+	;; {"123456789"[: -3 : -2]}
 	;; "642"
 	((string? container-eval) 
 
-	 ;; {"abcdefghijklmno"[$ 7 $ 2]}
+	 ;; {"abcdefghijklmno"[: 7 : 2]}
 	 ;; "aceg"
-	 ;; > {"123456789"[$ -3 $ -2]}
+	 ;; > {"123456789"[: -3 : -2]}
 	 ;; "642"
-	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[$ i2 $ s]
+	 (cond ((and (equal? slice index1-or-keyword-eval) ;; T[: i2 : s]
 		     (equal? slice index3-or-keyword-eval))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -620,17 +673,17 @@
 		  result))
 
 
-	       ;; {"abcdefghijklmno"[3 $ $ 2]}
+	       ;; {"abcdefghijklmno"[3 : : 2]}
 	       ;; "dfhjln"
-	       ;; > {"123456789"[3 $  $ 2]}
+	       ;; > {"123456789"[3 :  : 2]}
 	       ;; "468"
-	       ;; > {"123456789"[3 $  $ -2]}
+	       ;; > {"123456789"[3 :  : -2]}
 	       ;; "42"
-	       ;; > {"123456789"[-3 $  $ -2]}
+	       ;; > {"123456789"[-3 :  : -2]}
 	       ;; "7531"
-	       ;; > {"123456789"[-3 $  $ 2]}
+	       ;; > {"123456789"[-3 :  : 2]}
 	       ;; "79"
-	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ $ s]
+	       ((and (equal? index2-or-keyword-eval slice)  ;; T[i1 : : s]
 		     (equal? index3-or-keyword-eval slice))
 		
 		(when (= 0 index4-or-keyword-or-step-eval)
@@ -669,7 +722,7 @@
 		  result))
 	       
 	       
-	       ((and (equal? slice index2-or-keyword-eval) ;; T[i1 $ i3 $] 
+	       ((and (equal? slice index2-or-keyword-eval) ;; T[i1 : i3 :] 
 		     (equal? slice index4-or-keyword-or-step-eval))
 
 		(let ((i1  index1-or-keyword-eval)
@@ -695,19 +748,19 @@
 
 (define (apply-square-brackets-argument-5 container-eval index1-eval index2-or-keyword-eval index3-eval index4-or-keyword-eval index5-or-step-eval)
 
-  ;; {#(1 2 3 4 5 6 7 8 9)[2 $ 5 $ 1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[2 : 5 : 1]}
   ;; '#(3 4 5)
-  ;; {#(1 2 3 4 5 6 7 8 9)[5 $ 2 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[5 : 2 : -1]}
   ;; '#(6 5 4)
-  ;; {#(1 2 3 4 5 6 7 8 9)[2 $ 5 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[2 : 5 : -1]}
   ;; '#()
-  ;; {#(1 2 3 4 5 6 7 8 9)[-1 $ 5 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[-1 : 5 : -1]}
   ;; '#(9 8 7)
-  ;; {#(1 2 3 4 5 6 7 8 9)[-0 $ 5 $ -1]}
+  ;; {#(1 2 3 4 5 6 7 8 9)[-0 : 5 : -1]}
   ;; '#()
   (cond ((vector? container-eval)
 	 
-	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ i3 $ s]
+	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 : i3 : s]
 		  (equal? index4-or-keyword-eval slice))
 
 	     (begin
@@ -775,15 +828,15 @@
 
 	
 	
-	;; {"0123456789"[5 $ 2 $ -1]}
+	;; {"0123456789"[5 : 2 : -1]}
 	;; "543"
-	;; {"0123456789"[5 $  $ -1]}
+	;; {"0123456789"[5 :  : -1]}
 	;; "543210"
-	;; {"0123456789"[5 $ 0 $ -1]}
+	;; {"0123456789"[5 : 0 : -1]}
 	;; "54321"
 	((string? container-eval) 
 
-	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 $ i3 $ s]
+	 (if (and (equal? index2-or-keyword-eval slice)  ;; T[i1 : i3 : s]
 		  (equal? index4-or-keyword-eval slice))
 
 	     (begin
@@ -852,49 +905,56 @@
 
 
 
+(define (apply-square-brackets-argument-6-and-more container args)
+
+  (if (vector? container)
+      (function-array-n-dim-ref container (reverse args)) 
+      (array-ref container (list->vector args))))   ;; array SRFI 25
 
 
-;; TODO :this code is only here to use Scheme+ but it should be in other place (scheme-infix.rkt)
-;; split the expression using slice as separator
-(def (parse-square-brackets-arguments args-brackets)
 
-  ;;(display "apply-square-brackets.* : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
 
-  (when (null? args-brackets)
-	(return args-brackets))
+;; ;; split the expression using slice as separator
+;; (def (parse-square-brackets-arguments args-brackets) 
 
-  (declare result partial-result)
+;;   ;;(display "apply-square-brackets.* : parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
+
+;;   (when (null? args-brackets)
+;; 	(return args-brackets))
+
+;;   (declare result partial-result)
   
-  (def (psba args) ;; parse square brackets arguments
+;;   (def (psba args) ;; parse square brackets arguments
 
-       ;;(display "psba : args=") (display args) (newline)
-       ;;(display "psba : partial-result =") (display partial-result) (newline)
-       (when (null? args)
-	     ;;(display "before !*prec") (newline)
-	     (<- result (append result (!*prec partial-result))) ;; !*prec is defined in scheme-infix.rkt
-	     ;;(display "after !*prec") (newline)
-	     ;;(display result) (newline)
-	     ;;(display "return-rec") (newline)
-	     (return-rec result)) ;; return from all recursive calls
+;;        ;;(display "psba : args=") (display args) (newline)
+;;        ;;(display "psba : partial-result =") (display partial-result) (newline)
+;;        (when (null? args)
+;; 	     ;;(display "before !*prec") (newline)
+;; 	     (<- result (append result (!*prec partial-result))) ;; !*prec is defined in scheme-infix.rkt
+;; 	     ;;(display "after !*prec") (newline)
+;; 	     ;;(display result) (newline)
+;; 	     ;;(display "return-rec") (newline)
+;; 	     (return-rec result)) ;; return from all recursive calls
        
-       (<+ fst  (car args))
+;;        (<+ fst  (car args))
        
-       (if (equal? slice fst)
+;;        (if (equal? slice fst)
 	   
-	   ($>
-	    (when (not (null? partial-result))
-		  (<- result (append result (!*prec partial-result))) ;; evaluate and store the expression
-		  (<- partial-result  '())) ;; empty for the next possible portion between slice operator
-	    (<- result  (append result (list fst)))) ;; append the slice operator
+;; 	   ($>
+;; 	    (when (not (null? partial-result))
+;; 		  (<- result (append result (!*prec partial-result))) ;; evaluate and store the expression
+;; 		  (<- partial-result  '())) ;; empty for the next possible portion between slice operator
+;; 	    (<- result  (append result (list fst)))) ;; append the slice operator
 	   
-	   (<- partial-result (append partial-result (list fst)))) ;; not a slice operator but append it
+;; 	   (<- partial-result (append partial-result (list fst)))) ;; not a slice operator but append it
        
-       (psba (cdr args))) ;; end def, recurse
+;;        (psba (cdr args))) ;; end def, recurse
 
 
-  ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
-  (<+ rs  (psba args-brackets))
-  ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
-  rs
-  ) ;; initial call
+;;   ;;(display "parse-square-brackets-arguments : args-brackets=") (display args-brackets) (newline)
+;;   (<+ rs  (psba args-brackets))
+;;   ;;(display "parse-square-brackets-arguments : rs=") (display rs) (newline)
+;;   rs
+;;   ) ;; initial call
 
+) ; end module

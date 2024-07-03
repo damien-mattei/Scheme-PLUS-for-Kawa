@@ -4,7 +4,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,9 +20,17 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-(module-name array)
+;;(module-name array)
 
-(require for_next_step)
+(define-library (array) ; R7RS
+
+  (import (kawa base)
+	  (for_next_step)
+	  (increment))
+
+
+;;(require for_next_step)
+
 
 (export make-array-2d
 	array-2d-ref
@@ -37,7 +45,7 @@
 	funct-array-2d-ref
 	array-ref-set!)
 
-(include "increment.scm")
+;;(include "increment.scm")
 	
 
 ;; the value v should be put before in a let to avoid multiple evaluation after macro expand
@@ -199,3 +207,4 @@
 			  v))))
 
 
+) ; end module

@@ -64,15 +64,15 @@
 (define (transform-mixed-infix lyst)
   ;;(display "lyst=") (display lyst) (newline)
   
-  (if nfx-optim
-      (begin
-	(unless (infix? lyst) (error "ERROR: expression is not in infix notation: " lyst))
-	(let ((e0 (!0 infix-operators-lst-for-parser lyst)))
-	  ;;(display "!0 result = ") (display e0) (newline)
-	  (let ((na (n-arity e0)))
-	    ;;(display "na =") (display na) (newline)
-	    na)))
-      (cons '$nfx$ lyst)))
+  ;; (if nfx-optim
+  ;;     (begin
+  ;; 	(unless (infix? lyst) (error "ERROR: expression is not in infix notation: " lyst))
+  ;; 	(let ((e0 (!0 infix-operators-lst-for-parser lyst)))
+  ;; 	  ;;(display "!0 result = ") (display e0) (newline)
+  ;; 	  (let ((na (n-arity e0)))
+  ;; 	    ;;(display "na =") (display na) (newline)
+  ;; 	    na)))
+      (cons '$nfx$ lyst));)
 
 
 
@@ -90,11 +90,11 @@
 
 
 ;; usefull procedures and macro for the next part of code
-(define (then=? arg)
-  (or (equal? arg 'then) (equal? arg 'THEN)))
+;; (define (then=? arg)
+;;   (or (equal? arg 'then) (equal? arg 'THEN)))
 
-(define (else=? arg)
-  (or (equal? arg 'else) (equal? arg 'ELSE)))
+;; (define (else=? arg)
+;;   (or (equal? arg 'else) (equal? arg 'ELSE)))
 
 
 ;; > (if #f else 3)
@@ -120,88 +120,88 @@
 ;; . . SRFI-105.rkt:181:17: if: then after else near : '(then 3 4)
 ;; > (if #t then 1 2 then 3 4)
 ;; . . SRFI-105.rkt:181:17: if: 2 then inside near: '(then 3 4)
-(define (call-parse-if-args Largs) ; Largs = (test e1 ...)
+;; (define (call-parse-if-args Largs) ; Largs = (test e1 ...)
 
-  ;;(display "Largs=") (display Largs) (newline)
-  (define lenL (length Largs))
+;;   ;;(display "Largs=") (display Largs) (newline)
+;;   (define lenL (length Largs))
 
-  (when (< lenL 2)
-	(error "if: too few arguments:" Largs))
+;;   (when (< lenL 2)
+;; 	(error "if: too few arguments:" Largs))
 
-  (define test (car Largs))
-  (define e1 (cadr Largs))
+;;   (define test (car Largs))
+;;   (define e1 (cadr Largs))
 
-  ; deal with the old 2 args 'if' but modified
-  (condx ((and (= lenL 2) (then=? e1))
-	  (error "if: syntax error,found (if test then) only: near " Largs))
-	 ((and (= lenL 2) (else=? e1))
-	  (error "if: syntax error,found (if test else) only: near " Largs))
-	 ((= lenL 2) `(when ,test ,e1)) ; (if test e1)
-	 (exec (define e2 (third Largs)))
-	 ((and (= lenL 3) (then=? e1)) `(when ,test ; (if test then e2)
-					      ,e2))
-	 ((and (= lenL 3) (else=? e1)) `(unless ,test ; (if test else e2)
-						,e2))
-	 ((= lenL 3) `(if ,test
-			  ,e1
-			  ,e2))
+;;   ; deal with the old 2 args 'if' but modified
+;;   (condx ((and (= lenL 2) (then=? e1))
+;; 	  (error "if: syntax error,found (if test then) only: near " Largs))
+;; 	 ((and (= lenL 2) (else=? e1))
+;; 	  (error "if: syntax error,found (if test else) only: near " Largs))
+;; 	 ((= lenL 2) `(when ,test ,e1)) ; (if test e1)
+;; 	 (exec (define e2 (third Largs)))
+;; 	 ((and (= lenL 3) (then=? e1)) `(when ,test ; (if test then e2)
+;; 					      ,e2))
+;; 	 ((and (= lenL 3) (else=? e1)) `(unless ,test ; (if test else e2)
+;; 						,e2))
+;; 	 ((= lenL 3) `(if ,test
+;; 			  ,e1
+;; 			  ,e2))
 
-	 (else
+;; 	 (else
 	  
-	  (define L-then '())
-	  (define L-else '())
-	  (define cpt-then 0)
-	  (define cpt-else 0)
+;; 	  (define L-then '())
+;; 	  (define L-else '())
+;; 	  (define cpt-then 0)
+;; 	  (define cpt-else 0)
 	  			   
-	  (define (parse-if-args L)
+;; 	  (define (parse-if-args L)
 	    
-	    (condx ((null? L) (set! L-then (reverse L-then))
-		              (set! L-else (reverse L-else)))
+;; 	    (condx ((null? L) (set! L-then (reverse L-then))
+;; 		              (set! L-else (reverse L-else)))
 		   
-		   (exec (define ec (car L))
-			 (define rstL (cdr L)))
+;; 		   (exec (define ec (car L))
+;; 			 (define rstL (cdr L)))
 			 		   
-		   ((then=? ec) (when (= cpt-else 1)
-				      (error "if: then after else near :" L))
-		                (when (= cpt-then 1)
-				      (error "if: 2 then inside near:" L))
-		                (set! cpt-then (+ 1 cpt-then))
-		                (parse-if-args rstL)) ; recurse
+;; 		   ((then=? ec) (when (= cpt-else 1)
+;; 				      (error "if: then after else near :" L))
+;; 		                (when (= cpt-then 1)
+;; 				      (error "if: 2 then inside near:" L))
+;; 		                (set! cpt-then (+ 1 cpt-then))
+;; 		                (parse-if-args rstL)) ; recurse
 		   
-		   ((else=? ec) (when (= cpt-else 1)
-				      (error "if: 2 else inside near:" L))
-		                (set! cpt-else (+ 1 cpt-else))
-		                (parse-if-args rstL)) ; recurse
+;; 		   ((else=? ec) (when (= cpt-else 1)
+;; 				      (error "if: 2 else inside near:" L))
+;; 		                (set! cpt-else (+ 1 cpt-else))
+;; 		                (parse-if-args rstL)) ; recurse
 
 		   
-		   ((and (>= cpt-then 1) (= cpt-else 0)) (insert-set! ec L-then)
-		                                         (parse-if-args rstL)) ; recurse
+;; 		   ((and (>= cpt-then 1) (= cpt-else 0)) (insert-set! ec L-then)
+;; 		                                         (parse-if-args rstL)) ; recurse
 
 		   
-		   ((>= cpt-else 1) (insert-set! ec L-else)
-		                    (parse-if-args rstL))  ; recurse
+;; 		   ((>= cpt-else 1) (insert-set! ec L-else)
+;; 		                    (parse-if-args rstL))  ; recurse
 		   
-		   (else ; start with 'then' directives but without 'then' keyword !
-		    ;; i allow this syntax but this is dangerous:  risk of confusion with regular scheme syntax
+;; 		   (else ; start with 'then' directives but without 'then' keyword !
+;; 		    ;; i allow this syntax but this is dangerous:  risk of confusion with regular scheme syntax
 		    
-		    (insert-set! ec L-then)
+;; 		    (insert-set! ec L-then)
 		    
-		    (set! cpt-then 1)
-		    (parse-if-args rstL)))) ; recurse
+;; 		    (set! cpt-then 1)
+;; 		    (parse-if-args rstL)))) ; recurse
 	    
-	    (define Lr (cdr Largs)) ; list of arguments of 'if' without the test
+;; 	    (define Lr (cdr Largs)) ; list of arguments of 'if' without the test
 						    
-	    (parse-if-args Lr) ; call the parsing of arguments
+;; 	    (parse-if-args Lr) ; call the parsing of arguments
 	    
-	    (cond ((null? L-then) `(unless ,test
-					   ,@L-else))
-		  ((null? L-else) `(when ,test
-					 ,@L-then))
-		  (else `(if ,test
-			     (let ()
-			       ,@L-then)
-			     (let ()
-			       ,@L-else)))))))
+;; 	    (cond ((null? L-then) `(unless ,test
+;; 					   ,@L-else))
+;; 		  ((null? L-else) `(when ,test
+;; 					 ,@L-then))
+;; 		  (else `(if ,test
+;; 			     (let ()
+;; 			       ,@L-then)
+;; 			     (let ()
+;; 			       ,@L-else)))))))
 
 
 
@@ -249,11 +249,12 @@
 		     (error "ERROR: my-read-delimited-list : $bracket-apply$ without container : " datum))
 		   (set! container (cadr datum))
 		   (set! indexs (cddr datum))
-		   (set! datum
-			 (list '$bracket-apply$next
-			       container
-			       (cons 'list
-				     (optimizer-parse-square-brackets-arguments indexs)))))
+		   (set! datum `(bracket-apply ,container ,@indexs)))
+			 
+			 ;; (list '$bracket-apply$next
+			 ;;       container
+			 ;;       (cons 'list
+			 ;; 	     (optimizer-parse-square-brackets-arguments indexs)))))
 		 
 		 ;;(display "my-read-delimited-list : after parsing and optimization, datum=" stderr) (display datum stderr) (newline stderr)
 		       
@@ -280,11 +281,11 @@
 		   (let ((datum2 (cons datum
 				       (my-read-delimited-list my-read stop-char port))))
 		     
-		     (when (and (list? datum2)
-				(not (null? datum2))
-				(equal? (car datum2) 'if))
-			   (define datum3 (call-parse-if-args (cdr datum2)))
-			   (set! datum2 datum3))
+		     ;; (when (and (list? datum2)
+		     ;; 		(not (null? datum2))
+		     ;; 		(equal? (car datum2) 'if))
+		     ;; 	   (define datum3 (call-parse-if-args (cdr datum2)))
+		     ;; 	   (set! datum2 datum3))
 		     
 		     datum2))))))))
       
@@ -294,13 +295,10 @@
       rv))
 
 
-(define (parser-$bracket-apply$next-arguments port prefix)
-	 ;; create ($bracket-apply$next container (list args1 args2 ...))
-	 (list '$bracket-apply$next
-	       prefix ;; = container
-	       (cons 'list
-		     (optimizer-parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port)))))
-                                                                       ;; return a list of arguments between [ ]
+;; (define (parser-$bracket-apply$next-arguments port prefix)
+;;   ;; create ($bracket-apply$next container args1 args2 ...)
+;;   `($bracket-apply$next ,prefix ;; = container (vector,array,hash table ....)
+;; 			,@(optimizer-parse-square-brackets-arguments (my-read-delimited-list neoteric-read-real #\] port))))
 
 
 
@@ -323,16 +321,17 @@
 	  ((char=? c #\[ )  ; Implement f[x]
 	   ;;(display "SRFI-105 : neoteric-process-tail" stderr) (newline stderr)
 	   (read-char port)
-	   (if slice-optim
+	   ;; no more optim ,it is now in the macro pre-compil stage
+	   ;; (if slice-optim
 	       
-	       (neoteric-process-tail port
-				      (parser-$bracket-apply$next-arguments port prefix))
+	   ;;     (neoteric-process-tail port
+	   ;; 			      (parser-$bracket-apply$next-arguments port prefix))
 	       
 	       
 	       (neoteric-process-tail port
 				      (cons 'bracket-apply ;; kawa already use $bracket-apply$ for vectors !
 					    (cons prefix
-						  (my-read-delimited-list neoteric-read-real #\] port))))))
+						  (my-read-delimited-list neoteric-read-real #\] port)))));)
 	  
 	   ((char=? c #\{ )  ; Implement f{x}
             (read-char port)
@@ -395,7 +394,8 @@
 	 ;;(display "SRFI-105 : underlying-read : [ " stderr) (newline stderr)
 	 (let ((rv '()))
 	   (if kawa-compat
-	       (set! rv (default-scheme-read port)) ;; this convert [ ... ] in ($bracket-list$ ...) in Kawa at least allowing Kawa special expressions such as: [1 <: 7]
+	       (set! rv (default-scheme-read port)) ;; this convert [ ... ] in ($bracket-list$ ...),$bracket-list$ of Kawa not SRFI 105,allowing Kawa special expressions such as: [1 <: 7] but  in Kawa special syntax we can not use infix expression
+
 	       (begin
 		  (read-char port)
 		  (my-read-delimited-list my-read #\] port)))

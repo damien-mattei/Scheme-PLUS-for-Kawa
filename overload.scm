@@ -6,7 +6,7 @@
 ;; This file is part of Scheme+
 
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,12 +27,18 @@
 
 ;; use with Scheme+: (require overload)
 
-(module-name overload)
+;;(module-name overload)
 
-(require 'srfi-1)
-(require 'srfi-69)
 
-(require infix-operators)
+(define-library (overload) ; R7RS
+
+  (import (kawa base)
+	  (srfi 1)
+	  (srfi 69)
+	  (condx)) ; hash table
+
+
+;;(require infix-operators) ;  on s'en fout car on parse de la syntaxe
 
 (export define-overload-procedure
 	overload-procedure
@@ -69,7 +75,7 @@
 ;; Warning: overload is now a module to prevent infinite recursion in case someone overload a scheme procedure used in the implementation of any of the procedures provided by overload.scm (example: length !)
 
 
-(include "condx.scm")
+;;(include "condx.scm")
 
 
 (define $ovrld-ht$ (make-hash-table)) ;; for procedure and operators
@@ -536,8 +542,8 @@
        ;;(require (rename-in racket/base (proc
        	;;			        orig-proc)))
 
-       (display "proc =") (display proc) (newline)
-       (display "orig-proc =") (display orig-proc) (newline)
+       (display "define-overload-existing-operator : proc =") (display proc) (newline)
+       (display "define-overload-existing-operator : orig-proc =") (display orig-proc) (newline)
        
        (define qproc (quote proc)) 
        
@@ -579,21 +585,21 @@
 		 (proc (car args-lst) (apply proc (cdr args-lst))))
 		(else
 		 ;;(display "else") (newline)
-		 (apply orig-proc args-lst)))) ;; end proc ?
+		 (apply orig-proc args-lst)))) ;; end proc
        
        ;;(hash-table-set! $ovrld-ht$ qproc (list (list (list number? number?) orig-proc)))
        (hash-table-set! $ovrld-ht$ qproc '())
 
-       (let ((tst-member (memq orig-proc (caddr infix-operators-lst))))
-	 (display "define-overload-existing-operator : tst-member orig-proc = ") (display tst-member) (newline))
+       ;; (let ((tst-member (memq orig-proc (caddr infix-operators-lst))))
+       ;; 	 (display "define-overload-existing-operator : tst-member orig-proc = ") (display tst-member) (newline))
        
-       (let ((tst-member (memq proc (caddr infix-operators-lst))))
-	 (display "define-overload-existing-operator : tst-member proc avant = ") (display tst-member) (newline))
+       ;; (let ((tst-member (memq proc (caddr infix-operators-lst))))
+       ;; 	 (display "define-overload-existing-operator : tst-member proc avant = ") (display tst-member) (newline))
        ;;(replace-operator! orig-proc proc)
-       (insert-operator! orig-proc proc)
+       ;;(insert-operator! orig-proc proc)
        
-       (let ((tst-member (memq proc (caddr infix-operators-lst))))
-	 (display "define-overload-existing-operator : tst-member proc apres = ") (display tst-member) (newline))
+       ;; (let ((tst-member (memq proc (caddr infix-operators-lst))))
+       ;; 	 (display "define-overload-existing-operator : tst-member proc apres = ") (display tst-member) (newline))
        
        ))))
 
@@ -645,7 +651,7 @@
        
        (hash-table-set! $ovrld-ht$ qproc '())
        ;;(replace-operator! orig-proc proc)
-       (insert-operator! orig-proc proc)
+       ;;(insert-operator! orig-proc proc)
        ))))
 
 
@@ -766,3 +772,4 @@
 
 
 
+) ; end module

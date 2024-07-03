@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 8.1
+;; version 9.1
 
 ;; author: Damien MATTEI
 
@@ -25,22 +25,56 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; use : (require Scheme+)
+;; kawa -Dkawa.import.path=".:/Users/mattei/Scheme-PLUS-for-Kawa:"
 
 
-(module-name Scheme+)
+;; use :
 
-(require 'srfi-1)
-(require 'srfi-69) ;; hash table
+;;(import (Scheme+))
+;; or :
+;;(require Scheme+)
 
-(require array)
-(require for_next_step)
-(require overload)
-(require infix-operators)
+
+;;(module-name Scheme+)
+
+(define-library (Scheme+) ; R7RS
+
+  (import ;;(kawa base)
+   ;;(only (scheme base) (do do-scheme)) ; only imports and rename do in do-scheme
+   (rename (kawa base) (do do-scheme)
+	               (if if-scheme)) ; standard imports and rename do in do-scheme
+   (srfi 1) ; first ...
+   (srfi 69); hash table
+   (array)
+   (for_next_step)
+   (overload)
+
+   (assignment)
+   (bitwise)
+   (block)
+   (bracket-apply)
+   (condx)
+   (declare)
+   (def)
+   (exponential)
+   (increment)
+   (modulo)
+   (nfx)
+   (not-equal)
+   (range)
+   (repeat-until)
+   (slice)
+   (while-do)
+   (if-then-else)
+   
+   ) ; end import
+
+ 
+
 
 (export def
 	bracket-apply
-	$bracket-apply$next
+	;;$bracket-apply$next
 	: ;; $  see slice.scm
 	for
 	for-basic
@@ -65,10 +99,11 @@
 	<v v>
 	⇜ ⇝
 	repeat while do
+	if
 	%
 	<< >>
 	& ∣
-	$nfx$ !*prec
+	$nfx$ ;;!*prec
 	
 	$ovrld-ht$
 	
@@ -99,37 +134,15 @@
 	find-getter-for-overloaded-square-brackets
 	find-setter-for-overloaded-square-brackets
 
-	infix-operators-lst
-	set-infix-operators-lst!
-	replace-operator!
-	insert-operator!)
+	;;infix-operators-lst
+	;;set-infix-operators-lst!
+	;;replace-operator!
+	;;insert-operator!
+
+	) ; end export
 
 
-(import
 
-    (only (scheme base) (do do-scheme)) ; standard imports and rename do in do-scheme
-
-    )
+) ; end module
 
 
-;; try include , use include-relative-relative if problems
-(include "rec.scm") ; rec does  not exist in Kawa (no SRFI 31)
-(include "def.scm")
-(include "set-values-plus.scm")
-(include "increment.scm")
-(include "declare.scm")
-(include "condx.scm")
-(include "block.scm")
-(include "not-equal.scm")
-(include "exponential.scm")
-(include "while-do.scm")
-(include "repeat-until.scm")
-(include "modulo.scm")
-(include "bitwise.scm")
-
-(include "slice.scm")
-
-(include "scheme-infix.scm")
-
-(include "assignment.scm")
-(include "apply-square-brackets.scm")

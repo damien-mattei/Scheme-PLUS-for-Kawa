@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2021 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -15,7 +15,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+(define-library (declare) ; R7RS
 
+  (import (kawa base))
+
+  (export declare)
 
 ;; (declare ls dyn) ;; declare multiple variables
 
@@ -23,6 +27,6 @@
   (syntax-rules ()
     ((_ var1 ...) (begin
 		      (define var1 '())
-		      ...))))
+		      ...))))) ; end module
 
 

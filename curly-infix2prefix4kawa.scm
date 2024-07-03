@@ -1,4 +1,7 @@
-;; infix optimizer with precedence operator by Damien Mattei
+#!/usr/bin/env kawa
+;;#!/opt/homebrew/bin/kawa
+
+;; infix parser/optimizer with precedence operator by Damien Mattei
 
 
 ;; Copyright (C) 2012 David A. Wheeler and Alan Manuel K. Gloria. All Rights Reserved.
@@ -11,36 +14,36 @@
 
 ;; modification for Kawa by Damien Mattei
 
-;; use with: kawa curly-infix2prefix4kawa.scm file2parse.scm
+;; use with: kawa curly-infix2prefix4kawa.scm  --srfi-105 file2parse.scm
 
-;; example: kawa curly-infix2prefix4kawa.scm ../AI_Deep_Learning/kawa/matrix+.scm > ../AI_Deep_Learning/kawa/matrix.scm
+;; example: kawa curly-infix2prefix4kawa.scm  --srfi-105 ../AI_Deep_Learning/kawa/matrix+.scm | tr -d '|' > ../AI_Deep_Learning/kawa/matrix.scm
 
-;; kawa curly-infix2prefix4kawa.scm ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
+;; kawa curly-infix2prefix4kawa.scm  --srfi-105 ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
 
 ;; options:
 
 ;; --srfi-105 : set strict compatibility mode with SRFI-105
 
-(require 'srfi-1) ;; for 'third' ...
+;;(require 'srfi-1) ;; for 'third' ...
 
-(include "rest.scm")
+(define rest cdr)
 
-(include "operation-redux.scm")
-(include "optimize-infix.scm")
-(include "assignment-light.scm")
-(include "rec.scm")
-(include "block.scm")
-(include "declare.scm")
-(include "slice.scm")
-(include "def.scm")
-(include "optimize-infix-slice.scm")
+;; (include "operation-redux.scm")
+;; (include "optimize-infix.scm")
+;; (include "assignment-light.scm")
+;; (include "rec.scm")
+;; (include "block.scm")
+;; (include "declare.scm")
+;; (include "slice.scm")
+;; (include "def.scm")
+;; (include "optimize-infix-slice.scm")
 
-;;(include "when-unless.rkt")
-(include "while-do.scm")
+;; ;;(include "when-unless.rkt")
+;; (include "while-do.scm")
 
 (define stderr (current-error-port))
 
-(include "condx.scm")
+;;(include "condx.scm")
 
 
 (include "SRFI-105.scm")
@@ -50,6 +53,10 @@
 
 
 (define srfi-105 #f)
+
+;; quiet mode that do not display on standart error the code
+(define verbose #f)
+
 
 (define (literal-read-syntax src)
 
@@ -72,28 +79,31 @@
 (define (process-input-code-tail-rec in) ;; in: port
 
 
-  (display "SRFI-105 Curly Infix parser with operator precedence by Damien MATTEI" stderr) (newline stderr)
-  (display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
+  (when verbose
+	(display "SRFI-105 Curly Infix parser with operator precedence by Damien MATTEI" stderr) (newline stderr)
+	(display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
+	
+	(when srfi-105
+	      (display "SRFI-105 strict compatibility mode is ON." stderr))
+	(newline stderr)
 
-  (when srfi-105
-	(display "SRFI-105 strict compatibility mode is ON." stderr))
-  (newline stderr)
+	(newline stderr) 
 
-  (newline stderr) 
-
-  ;;(display slice-optim stderr) (newline stderr) 
+	;;(display slice-optim stderr) (newline stderr) 
   
-  (display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr)
+	(display "Parsed curly infix code result = " stderr) (newline stderr) (newline stderr))
   
   (define (process-input acc)
     
     (define result (curly-infix-read in))  ;; read an expression
 
-    ;;(display (write result stderr) stderr) ;; without 'write' string delimiters disappears !
-    ;;(display result stderr)
-    (write result stderr)
-    (newline stderr)
-    (newline stderr)
+
+    (when verbose
+	  ;;(display (write result stderr) stderr) ;; without 'write' string delimiters disappears !
+	  ;;(display result stderr)
+	  (write result stderr)
+	  (newline stderr)
+	  (newline stderr))
     
     (if (eof-object? result)
 	(reverse acc)
@@ -118,6 +128,7 @@
       (display "options:") (newline)(newline)
       (display "  --srfi-105 : set strict compatibility mode with SRFI-105 ") (newline) (newline)
       (display "  --kawa : try to parse a code mixing both Kawa range syntax and Scheme+ slicing syntax ") (newline) (newline)
+      (display "  --verbose : display code on stderr too ") (newline) (newline)
       (exit))
 
 ;; SRFI-105 strict compatibility option
@@ -127,6 +138,9 @@
 
 (when (member "--kawa" options)
       (set! kawa-compat #t))
+
+(when (member "--verbose" options)
+      (set! verbose #t))
 
 
 (define file-name (car (reverse cmd-ln)))

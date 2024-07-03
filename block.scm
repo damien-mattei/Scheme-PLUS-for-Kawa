@@ -1,14 +1,28 @@
 ; This file is part of Scheme+
 
-;; Copyright 2021-2023 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+(define-library (block) ; R7RS
+
+  (import (kawa base))
+
+  (export $>
+	  $+>)
 
 
 (define-syntax $>
@@ -50,3 +64,4 @@
 ;;     ((_ ev)  ev)
 ;;     ((_ ev ...) (begin ev ...))))
 
+) ; end module

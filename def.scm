@@ -1,7 +1,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2021-2022 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,6 +17,87 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+(define-library (def) ; R7RS
+
+  (import (kawa base)
+	  (rec))
+
+  (export def
+	  <+ +>
+	  ⥆ ⥅
+	  :+ +:)
+
+
+;; #|kawa:57|# 
+;; #|kawa:58|# (define r 2)
+;; #|kawa:59|# (if-defined r 'defined (define r 7))
+;;if-defined : where=#t
+;; id=r
+;; (if-defined r 'defined (define r 7))
+;; defined
+;; #|kawa:60|# r
+;; 2
+;; #|kawa:61|# (defined-symbol? r)
+;; #t
+;; #|kawa:62|# (defined-symbol? t)
+;; /dev/tty:62:18: warning - no declaration seen for t
+;; defined-symbol? : undefined
+;; #f
+;; #|kawa:63|# (let ((k 7)) (defined-symbol? k))
+;; #t
+;;
+
+;; (define-syntax defined-symbol?
+;;   (syntax-rules ()
+;;     ((_ x) (call-with-current-continuation 
+;; 	    (lambda (exit)
+;; 	      (with-exception-handler
+;; 	       (lambda (e)
+;; 		 (display "defined-symbol? : undefined") (newline)
+;; 		 (exit #f)) ; eval failed => not defined
+;; 	       (lambda ()
+;; 		 (eval x (interaction-environment))
+;; 		 #t))))))) ; eval suceeded => defined
+
+
+;; #|kawa:86|# (define k 0)
+;; #|kawa:87|# (let loop () (if (< k 4) (let () (display k) (newline) (<- k (+ k 1)) (loop))))
+;; if-defined : where=#t
+;; id=k
+;; 0
+;; 1
+;; 2
+;; 3
+;; #|kawa:88|# (let () (define k 0) (let loop () (if (< k 4) (let () (display k) (newline) (<- k (+ k 1)) (loop)))))
+;; if-defined : where=#t
+;; id=k
+;; 0
+;; 1
+;; 2
+;; 3
+;; #|kawa:89|# (let () (define s 0) (let loop () (if (< s 4) (let () (display s) (newline) (<- s (+ s 1)) (loop)))))
+;; if-defined : where=#t
+;; id=s
+;; 0
+;; 1
+;; 2
+;; 3
+;; #|kawa:90|# (let ((s 0)) (let loop () (if (< s 4) (let () (display s) (newline) (<- s (+ s 1)) (loop)))))
+;; if-defined : where=#t
+;; id=s
+;; 0
+;; 1
+;; 2
+;; 3
+
+;; (define-syntax if-defined
+;;   (lambda (stx)
+;;     (syntax-case stx ()
+;;       ((_ id iftrue iffalse)
+;;        (let ((where (defined-symbol? #'id))) ;;(quote id))))
+;; 	 (display "if-defined : where=") (display where) (newline)
+;; 	 (display "id=") (display #'id) (newline)
+;; 	 (if where #'iftrue #'iffalse))))))
 
 
 ;; scheme@(guile-user)> (def (foo) (when #t (return "hello") "bye"))
@@ -91,6 +172,7 @@
 	)))
 
 
+;; TODO rewrite with syntax
 
 ;; definition and assignment
 ;; { x <+ 7 } is equivalent to : (<- x 7) or (define x 7)
@@ -120,8 +202,8 @@
 (define-syntax <+
   (syntax-rules ()
     
-    ((_ (var1 ...) expr) (begin
-			   (define-values (var1 ...) expr)))
+    ((_ (var1 ...) expr) ;;(begin
+			   (define-values (var1 ...) expr));)
 			   ;;(values var1 ...)))
     ;; (begin
     ;;   (define var1 '())
@@ -198,6 +280,11 @@
 (define-syntax +>
   (syntax-rules ()
 
+    ((_ exp var ...) (<+ var ... exp))))
+
+(define-syntax +:
+  (syntax-rules ()
+
     ((_ exp var ...) (<+ var ... exp)))) 
 
     
@@ -221,3 +308,5 @@
 
 ;; (display result) (newline)
 
+
+) ; end module

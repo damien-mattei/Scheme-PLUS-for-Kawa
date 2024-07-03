@@ -3,7 +3,7 @@
 
 ; This file is part of Scheme+
 
-;; Copyright 2021 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,6 +17,14 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+(define-library (condx) ; R7RS
+
+  (import (kawa base))
+
+  (export condx)
+
 
 
 ; example:
@@ -113,3 +121,4 @@
 ;;         ((= x 7) (+ x y z))
 ;;         (else 'you_should_not_be_here))
 
+) ; end module

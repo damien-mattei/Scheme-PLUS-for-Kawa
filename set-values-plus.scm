@@ -16,6 +16,16 @@
 
 ;; modified by Damien Mattei
 
+
+(define-library (set-values-plus) ; R7RS
+
+  (import (kawa base))
+
+  (export set!-values-plus
+	  return-values
+	  create-return-values)
+
+
 ;; this version can set values for arrays,hash tables,etc
 ;; it uses the Scheme+ assignment operator: <-
 (define-syntax set!-values-plus
@@ -36,3 +46,33 @@
 ;; (define z)
 ;; (set!-values (x y z) (values 0 1 2))
 ;; (pk x y z)
+
+
+;; > (return-values (values 1 2 3))
+;; 1
+;; 2
+;; 3
+;; > (return-values (values 1))
+;; 1
+;; > (return-values 1)
+;; 1
+;; > (return-values (sin 0.7))
+;; 0.644217687237691
+(define-syntax return-values
+    (syntax-rules ()
+      ((_ expr) (call-with-values (lambda () expr)
+                                  values))))
+
+;; > ((create-return-values 3))
+;; 3
+;; > ((create-return-values (values 1 2 3)))
+;; 1
+;; 2
+;; 3
+(define-syntax create-return-values
+    (syntax-rules ()
+      ((_ expr) (lambda () (return-values expr)))))
+
+
+) ; end module
+

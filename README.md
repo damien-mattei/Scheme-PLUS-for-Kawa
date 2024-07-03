@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 8.1 for Kawa Scheme<br>
+          style="color: #999999;"> <font size="+2">version 9.1 for Kawa Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	The general documentation of Scheme+ is available here:<br>
@@ -33,19 +33,35 @@
   <br>
   <br>
   For SRFI 105 support in Scheme+ you must preprocess your Kawa
-  Scheme+ code with this command:<br>
+  Scheme+ code with one of  those commands:<br>
   <br>
   <pre>
-  kawa curly-infix2prefix4kawa.scm --kawa your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
+  kawa curly-infix2prefix4kawa.scm --srfi-105
+  your_kawa_file_in_scheme+.scm | tr -d '|' >
+  your_kawa_file_in_scheme.scm
+  
+  for Scheme+ (with less compatibility with Kawa: <: not allowed in
+  vectors) you can use the command:
+  scheme+2kawa your_kawa_file_in_scheme+.scm
 </pre>
 <br>
+<br>
+    <a
+  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa%2B.scm">Example
+  of Scheme+ code.</a>
+  <br>
+  
+   <a
+  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/kawa/matrix%2B.scm">Another
+   example
+  of Scheme+ code implementing Matrix and multiplication.</a>
+  
+  <a
+  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/Makefile.Kawa">Another
+   example
+  of a Makefile for Scheme+ code building the above examples.</a>
 
   <br>
   </body>
 
-$${\color{red}Due \space to \space bugs  \space in \space  the \space Kawa \space syntax \space transformers \space there \space will \space be \space no \space more
-\space update \newline }$$
-
-$${\color{red} \space of \space Scheme+ \space for \space Kawa \space
-until \space Kawa \space code \space is \space corrected.}$$
 

@@ -15,14 +15,21 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (modulo) ; R7RS
+
+
+(define-library (insert)
 
   (import (kawa base))
+  
+  (export insert
+	  insert-set!)
 
-  (export %)
 
+;; library procedures and macro
+(define insert cons)
 
-(define % modulo)
-
-) ; end module
-
+;; insert and set 
+(define-syntax insert-set!
+  (syntax-rules ()
+    ((_ expr var)
+     (set! var (insert expr var)))))) ;; end module declaration
