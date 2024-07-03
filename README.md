@@ -39,9 +39,11 @@
   kawa curly-infix2prefix4kawa.scm --srfi-105
   your_kawa_file_in_scheme+.scm | tr -d '|' >
   your_kawa_file_in_scheme.scm
+  </pre>
   
   for Scheme+ (with less compatibility with Kawa: <: not allowed in
   vectors) you can use the command:
+  <pre>
   scheme+2kawa your_kawa_file_in_scheme+.scm
 </pre>
 <br>
@@ -57,8 +59,7 @@
   of Scheme+ code implementing Matrix and multiplication.</a>
   
   <a
-  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/Makefile.Kawa">Another
-   example
+  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/Makefile.Kawa">Example
   of a Makefile for Scheme+ code building the above examples.</a>
 
   <br>
