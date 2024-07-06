@@ -545,19 +545,23 @@
        (display "define-overload-existing-operator : proc =") (display proc) (newline)
        (display "define-overload-existing-operator : orig-proc =") (display orig-proc) (newline)
        
-       (define qproc (quote proc)) 
+       (define qproc (quote proc))  ; quoted operator
        
-       (define (proc . args-lst)
+       (define (proc . args-lst) ; define operator
 
+	 ;; (display "overload.scm : proc : $ovrld-ht$=")
+	 ;; (display $ovrld-ht$)
 	 ;; (newline)
-	 ;; (display "proc=") (display proc) (newline)
-	 ;; (define ht (hash-table->alist $ovrld-ht$))
-	 ;; (display "hash table ht=")(display ht) (newline)
+
+	 ;; (display "overload.scm : proc : args-lst=")
+	 ;; (display args-lst)
+	 ;; (newline)
 
 
+	 ;; get the list of procedure in the hash table for a given operator
 	 (define proc-lst (hash-table-ref $ovrld-ht$ qproc)) ;;  example: ((number? string?) (lambda (n s) (display n) (display s) (newline)))
-	 ;;(display "proc-lst=") (display proc-lst)
-	 ;;(newline)
+	 ;; (display "overload.scm : proc : proc-lst=") (display proc-lst)
+	 ;; (newline)
 	 
 	 (define (check-args-lst pred-list) ; check arguments list match predicates
 	   ;;(display "pred-list=") (display pred-list) (newline)
