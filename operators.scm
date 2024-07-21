@@ -18,7 +18,7 @@
 (define-library (operators) ; R7RS
 
   (import (kawa base)
-	  ;;(srfi 1) ; bug in kawa
+	  ;(srfi 1)  ; (only (srfi 1) first) ; bug in kawa
 	  (syntax)
 	  (operators-list))
 

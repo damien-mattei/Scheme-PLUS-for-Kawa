@@ -319,7 +319,7 @@
 
 
 
-;; (define-overload-existing-procedure length)
+;; (define-overload-existing-procedure length orig-length)
 ;; > (overload length vector-length (vector?))
 ;; > (length #(1 2 3 4))
 ;; 4

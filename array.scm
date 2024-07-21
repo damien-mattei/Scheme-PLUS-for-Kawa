@@ -35,7 +35,15 @@
 (export make-array-2d
 	array-2d-ref
 	array-2d-set!
+	
+	f64array-2d-set!
+	f32array-2d-set!
+	
 	create-vector-2d
+	
+	create-f64vector-2d
+	create-f32vector-2d
+	
 	negative-vector-index
 	function-array-n-dim-ref
 	function-array-n-dim-set!
@@ -77,7 +85,20 @@
 (define-syntax array-2d-set!
   (syntax-rules ()
     ((_ array lin col val)
-       (vector-set! (vector-ref array lin) col val))))
+     (vector-set! (vector-ref array lin) col val))))
+
+
+(define-syntax f64array-2d-set!
+  (syntax-rules ()
+    ((_ array lin col val)
+     (f64vector-set! (vector-ref array lin) col val))))
+
+
+(define-syntax f32array-2d-set!
+  (syntax-rules ()
+    ((_ array lin col val)
+       (f32vector-set! (vector-ref array lin) col val))))
+
 
 ;; Scheme+ version
 ;; create a vector of line and column with a function
@@ -97,6 +118,24 @@
 	    (array-2d-set! v l c (fct l c))))
   v)
 
+
+;; create a vector (or array) of line and column with a function
+(define (create-f64vector-2d fct lin col)
+  (define v (make-vector lin))
+  (for ((define l 0) (< l lin) (set! l (+ l 1)))
+       (vector-set! v l (make-f64vector col))
+       (for ((define c 0) (< c col) (set! c (+ c 1)))
+	    (f64array-2d-set! v l c (fct l c))))
+  v)
+
+;; create a vector (or array) of line and column with a function
+(define (create-f32vector-2d fct lin col)
+  (define v (make-vector lin))
+  (for ((define l 0) (< l lin) (set! l (+ l 1)))
+       (vector-set! v l (make-f32vector col))
+       (for ((define c 0) (< c col) (set! c (+ c 1)))
+	    (f32array-2d-set! v l c (fct l c))))
+  v)
 
 
 ;; scheme@(guile-user)> (define arr (make-array-2d 10 7 0))

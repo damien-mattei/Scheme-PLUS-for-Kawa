@@ -659,7 +659,7 @@
 	       (<- index-eval (+ (string-length container-eval) index-eval)))
 	 (string-set! container-eval index-eval expr-eval))
 	
-	((array? container-eval)
+	((array? container-eval) ; also vector of srfi 4 are considered array !
 	 (array-set! container-eval index-eval expr-eval))
 
 	(else ;; overloaded
