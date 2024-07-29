@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 9.1
+;; version 9.2
 
 ;; author: Damien MATTEI
 
@@ -65,9 +65,7 @@
    (repeat-until)
    (slice)
    (while-do)
-   (if-then-else)
-   
-   ) ; end import
+   (if-then-else)) ; end import
 
  
 
@@ -92,6 +90,7 @@
 	declare
 	$>
 	$+>
+	begin-def
 	condx
 	<> ;; should not be compatible with 'cut' (srfi 26)
 	≠

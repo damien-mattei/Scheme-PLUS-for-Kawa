@@ -34,8 +34,8 @@
 
   (import (kawa base)
 	  (srfi 1)
-	  (srfi 69)
-	  (condx)) ; hash table
+	  (srfi 69) ; hash table
+	  (condx)) 
 
 
 ;;(require infix-operators) ;  on s'en fout car on parse de la syntaxe
@@ -74,8 +74,6 @@
 
 ;; Warning: overload is now a module to prevent infinite recursion in case someone overload a scheme procedure used in the implementation of any of the procedures provided by overload.scm (example: length !)
 
-
-;;(include "condx.scm")
 
 
 (define $ovrld-ht$ (make-hash-table)) ;; for procedure and operators
