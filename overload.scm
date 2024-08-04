@@ -76,6 +76,8 @@
 
 
 
+
+
 (define $ovrld-ht$ (make-hash-table)) ;; for procedure and operators
 
 (define $ovrld-square-brackets-lst$ '()) ;; for square brackets
@@ -536,9 +538,7 @@
 
      (begin
 
-       ;;(import (rename (overload) (proc orig-proc)))
-       ;;(require (rename-in racket/base (proc
-       	;;			        orig-proc)))
+       ;;(require (rename-in racket/base (proc orig-proc)))
 
        (display "define-overload-existing-operator : proc =") (display proc) (newline)
        (display "define-overload-existing-operator : orig-proc =") (display orig-proc) (newline)
