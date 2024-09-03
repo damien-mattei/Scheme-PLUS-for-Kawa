@@ -20,7 +20,7 @@
 
 (define-library (if-then-else) ; R7RS
 
-  (import (rename (kawa base) (if if-scheme))
+  (import (rename (kawa base) (if if-scheme)) ;; no more need as if-scheme replaced by cond
 	  (srfi 1)
 	  (insert)
 	  (syntax))
