@@ -23,7 +23,9 @@
 
   (import (kawa base)
 	  (operators-list) ;; bug syntax transformers
-	  (syntax))
+	  ;;(syntax)
+	  (syntax-plus)
+	  )
 	  
   (export !*prec-generic  
 	  !0-generic ;; bug syntax transformers

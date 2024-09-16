@@ -19,7 +19,8 @@
 
   (import (kawa base)
 	  ;(srfi 1)  ; (only (srfi 1) first) ; bug in kawa
-	  (syntax)
+	  ;;(syntax)
+	  (syntax-plus)
 	  (operators-list))
 
   (export operator?

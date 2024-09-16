@@ -21,7 +21,9 @@
 (define-library (infix) ; R7RS
 
   (import (kawa base)
-	  (syntax))
+	  ;;(syntax)
+	  (syntax-plus)
+	  )
 
   (export infix?)
 

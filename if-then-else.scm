@@ -23,7 +23,9 @@
   (import (rename (kawa base) (if if-scheme)) ;; no more need as if-scheme replaced by cond
 	  (srfi 1)
 	  (insert)
-	  (syntax))
+	  ;;(syntax)
+	  (syntax-plus)
+	  )
 
   (export if)
  
