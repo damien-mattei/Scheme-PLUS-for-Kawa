@@ -473,6 +473,24 @@
 ;; 		     )))))
 
 
+
+;; #|kawa:2|# (define res (for ((define i 0) (< i 5) (set! i (+ i 1))) (define x 7) (display i) (newline) (when (= i 2) (break i))))
+;; 0
+;; 1
+;; 2
+;; #|kawa:3|# res
+;; 2
+;; #|kawa:4|# (for ((define i 0) (< i 5) (set! i (+ i 1))) (define x 7) (display i) (continue) (newline) )
+;; /dev/tty:4:82: warning - unreachable code
+;; 0 1 2 3 4
+;; #|kawa:5|# (for ((define i 0) (< i 5) (set! i (+ i 1))) (define x 7) (display i) (newline) )
+;; 0
+;; 1
+;; 2
+;; 3
+;; 4
+
+
 (define-syntax for
   
   (lambda (stx)
