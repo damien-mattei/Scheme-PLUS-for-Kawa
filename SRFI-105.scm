@@ -10,9 +10,9 @@
 
 
 
-(define nfx-optim #t)
+;;(define nfx-optim #t)
 
-(define slice-optim #t)
+;;(define slice-optim #t)
 
 (define kawa-compat #f)
 

@@ -14,36 +14,28 @@
 
 ;; modification for Kawa by Damien Mattei
 
-;; use with: kawa curly-infix2prefix4kawa.scm  --srfi-105 file2parse.scm
+;; use with: kawa curly-infix2prefix4kawa.scm  file2parse.scm
 
-;; example: kawa curly-infix2prefix4kawa.scm  --srfi-105 ../AI_Deep_Learning/kawa/matrix+.scm | tr -d '|' > ../AI_Deep_Learning/kawa/matrix.scm
+;; or simply:
+;; curly-infix2prefix4kawa.scm  file2parse.scm
+;; if the file is executable
 
-;; kawa curly-infix2prefix4kawa.scm  --srfi-105 ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
+;; example: kawa curly-infix2prefix4kawa.scm   ../AI_Deep_Learning/kawa/matrix+.scm | tr -d '|' > ../AI_Deep_Learning/kawa/matrix.scm
+
+;; kawa curly-infix2prefix4kawa.scm  ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
 
 ;; options:
 
-;; --srfi-105 : set strict compatibility mode with SRFI-105
+;; --verbose
+
+;; --kawa : try to parse a code mixing both Kawa range syntax <:  and Scheme+ slicing syntax :
 
 ;;(require 'srfi-1) ;; for 'third' ...
 
 (define rest cdr)
 
-;; (include "operation-redux.scm")
-;; (include "optimize-infix.scm")
-;; (include "assignment-light.scm")
-;; (include "rec.scm")
-;; (include "block.scm")
-;; (include "declare.scm")
-;; (include "slice.scm")
-;; (include "def.scm")
-;; (include "optimize-infix-slice.scm")
-
-;; ;;(include "when-unless.rkt")
-;; (include "while-do.scm")
 
 (define stderr (current-error-port))
-
-;;(include "condx.scm")
 
 
 (include "SRFI-105.scm")
@@ -52,7 +44,7 @@
 ;;(import (kawa pprint))
 
 
-(define srfi-105 #f)
+;;(define srfi-105 #f)
 
 ;; quiet mode that do not display on standart error the code
 (define verbose #f)
@@ -83,9 +75,9 @@
 	(display "SRFI-105 Curly Infix parser with operator precedence by Damien MATTEI" stderr) (newline stderr)
 	(display "(based on code from David A. Wheeler and Alan Manuel K. Gloria.)" stderr) (newline stderr) (newline stderr)
 	
-	(when srfi-105
-	      (display "SRFI-105 strict compatibility mode is ON." stderr))
-	(newline stderr)
+	;; (when srfi-105
+	;;       (display "SRFI-105 strict compatibility mode is ON." stderr))
+	;; (newline stderr)
 
 	(newline stderr) 
 
@@ -126,15 +118,15 @@
       (display "curly-infix2prefix4kawa.scm documentation: (see comments in source file for more examples)") (newline) (newline) 
       (display "kawa curly-infix2prefix4kawa.scm [options] file2parse.scm") (newline) (newline)
       (display "options:") (newline)(newline)
-      (display "  --srfi-105 : set strict compatibility mode with SRFI-105 ") (newline) (newline)
+;;      (display "  --srfi-105 : set strict compatibility mode with SRFI-105 ") (newline) (newline)
       (display "  --kawa : try to parse a code mixing both Kawa range syntax and Scheme+ slicing syntax ") (newline) (newline)
       (display "  --verbose : display code on stderr too ") (newline) (newline)
       (exit))
 
 ;; SRFI-105 strict compatibility option
-(when (member "--srfi-105" options)
-      (set! nfx-optim #f)
-      (set! slice-optim #f))
+;; (when (member "--srfi-105" options)
+;;       (set! nfx-optim #f)
+;;       (set! slice-optim #f))
 
 (when (member "--kawa" options)
       (set! kawa-compat #t))

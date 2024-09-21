@@ -19,7 +19,7 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 9.3 for Kawa Scheme<br>
+          style="color: #999999;"> <font size="+2">version 9.4 for Kawa Scheme<br>
           </font></span></b></h1>
     <p style="text-align: center;">
 	The general documentation of Scheme+ is available here:<br>
@@ -36,11 +36,15 @@
   Scheme+ code with one of  those commands:<br>
   <br>
   <pre>
-  kawa curly-infix2prefix4kawa.scm --srfi-105 your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
+  curly-infix2prefix4kawa.scm --kawa your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
+  </pre>
+  <br>
+  <pre>
+  kawa curly-infix2prefix4kawa.scm --kawa your_kawa_file_in_scheme+.scm | tr -d '|' > your_kawa_file_in_scheme.scm
   </pre>
   
   for Scheme+ (with less compatibility with Kawa: <: not allowed in
-  vectors) you can use the command:
+  vectors) you can remove the --kawa option above or use the command below:
   <pre>
   scheme+2kawa your_kawa_file_in_scheme+.scm
 </pre>
