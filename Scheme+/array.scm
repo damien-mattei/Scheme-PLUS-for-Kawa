@@ -20,13 +20,12 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-;;(module-name array)
 
-(define-library (array) ; R7RS
+(define-library (Scheme+ array) ; R7RS
 
   (import (kawa base)
-	  (for_next_step)
-	  (increment))
+	  (Scheme+ for_next_step)
+	  (Scheme+ increment))
 
 
 ;;(require for_next_step)

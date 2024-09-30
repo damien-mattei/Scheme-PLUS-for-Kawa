@@ -15,16 +15,18 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (rec) ; R7RS
+
+
+;; (define $ '$)
+;; (define slice $) ;; / , '..)
+
+
+(define-library (Scheme+ slice) ; R7RS
 
   (import (kawa base))
-	  
-  (export rec)
 
+  (export :
+	  slice)
 
-(define-syntax rec
-  (syntax-rules ()
-    ((rec (NAME . VARIABLES) . BODY)
-     (letrec ( (NAME (lambda VARIABLES . BODY)) ) NAME))
-    ((rec NAME EXPRESSION)
-     (letrec ( (NAME EXPRESSION) ) NAME))))) ; end module
+(define : ':)
+(define slice :)) ; end module

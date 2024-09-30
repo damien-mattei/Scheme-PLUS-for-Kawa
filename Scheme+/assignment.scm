@@ -20,21 +20,22 @@
 
 
 
-(define-library (assignment) ; R7RS
+(define-library (Scheme+ assignment) ; R7RS
 
   (import (kawa base)
 	  (srfi 1) ; bug in kawa
 	  (srfi 69) ; hash table
-	  (parse-square-brackets)
-	  (for_next_step)
-	  (array)
-	  (slice)
-	  (declare)
-	  (block)
-	  (def)
-	  (bracket-apply)
-	  (set-values-plus)
-	  (overload))
+	  
+	  (Scheme+ parse-square-brackets)
+	  (Scheme+ for_next_step)
+	  (Scheme+ array)
+	  (Scheme+ slice)
+	  (Scheme+ declare)
+	  (Scheme+ block)
+	  (Scheme+ def)
+	  (Scheme+ bracket-apply)
+	  (Scheme+ set-values-plus)
+	  (Scheme+ overload))
 
   (export  <- ->
 	   ← →

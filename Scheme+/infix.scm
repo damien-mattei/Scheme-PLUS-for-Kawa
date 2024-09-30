@@ -18,11 +18,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (infix) ; R7RS
+(define-library (Scheme+ infix) ; R7RS
 
   (import (kawa base)
 	  ;;(syntax)
-	  (syntax-plus)
+	  (Scheme+ syntax-plus)
 	  )
 
   (export infix?)

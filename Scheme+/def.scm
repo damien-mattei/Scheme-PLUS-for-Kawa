@@ -17,10 +17,10 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-(define-library (def) ; R7RS
+(define-library (Scheme+ def) ; R7RS
 
   (import (kawa base)
-	  (rec))
+	  (Scheme+ rec))
 
   (export def
 	  <+ +>

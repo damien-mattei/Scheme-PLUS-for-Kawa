@@ -15,18 +15,14 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (declare) ; R7RS
+(define-library (Scheme+ modulo) ; R7RS
 
   (import (kawa base))
 
-  (export declare)
+  (export %)
 
-;; (declare ls dyn) ;; declare multiple variables
 
-(define-syntax declare
-  (syntax-rules ()
-    ((_ var1 ...) (begin
-		      (define var1 '())
-		      ...))))) ; end module
+(define % modulo)
 
+) ; end module
 

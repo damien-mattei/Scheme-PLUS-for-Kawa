@@ -15,13 +15,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (operators) ; R7RS
+(define-library (Scheme+ operators) ; R7RS
 
   (import (kawa base)
 	  ;(srfi 1)  ; (only (srfi 1) first) ; bug in kawa
 	  ;;(syntax)
-	  (syntax-plus)
-	  (operators-list))
+	  (Scheme+ syntax-plus)
+	  (Scheme+ operators-list))
 
   (export operator?
 	  operator-syntax?

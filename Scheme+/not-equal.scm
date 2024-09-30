@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2021-2024 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -15,18 +15,29 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
-
-;; (define $ '$)
-;; (define slice $) ;; / , '..)
-
-
-(define-library (slice) ; R7RS
+(define-library (Scheme+ not-equal) ; R7RS
 
   (import (kawa base))
 
-  (export :
-	  slice)
+  (export <> ≠)
 
-(define : ':)
-(define slice :)) ; end module
+
+
+;; not equal operator for numbers
+
+;; scheme@(guile-user)> (<> 1 2)
+;; #t
+;; scheme@(guile-user)> {1 <> 2}
+;; #t
+;; scheme@(guile-user)> {1 <> 1}
+;; #f
+
+;; should not be compatible with 'cut' (srfi 26)
+(define (<> x y)
+   (not (= x y)))
+
+(define (≠ x y)
+  (not (= x y)))
+
+) ; end module
+

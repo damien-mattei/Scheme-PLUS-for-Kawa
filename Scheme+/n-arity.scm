@@ -17,11 +17,11 @@
 
 ;; Kawa version
 
-(define-library (n-arity) ; R7RS
+(define-library (Scheme+ n-arity) ; R7RS
 
   (import (kawa base)
-	  (operators)
-	  (operators-list))
+	  (Scheme+ operators)
+	  (Scheme+ operators-list))
 	  
   (export n-arity)
 

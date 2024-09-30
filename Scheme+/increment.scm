@@ -1,6 +1,6 @@
-;; This file is part of Scheme+
+;; Copyright 2022-2024 Damien MATTEI
 
-;; Copyright 2021-2024 Damien MATTEI
+;; kawa version
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -15,24 +15,33 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (exponential) ; R7RS
+
+
+
+
+(define-library (Scheme+ increment) ; R7RS
 
   (import (kawa base))
+  
+  (export incf
+	  inc!
+	  add1)
 
-  (export **)
 
+;; increment variable
+;; this is different than add1 in DrRacket
+(define-syntax incf
+  (syntax-rules ()
+    ((_ x)   (begin (set! x (+ x 1))
+		    x))))
 
+(define-syntax inc!
+  (syntax-rules ()
+    ((_ x)   (begin (set! x (+ x 1))
+		    x))))
 
-;; coding hint: use only macro when necessary
-
-;; (define-syntax **
-;;   (syntax-rules ()
-;;     ((_ a b) (expt a b))))
-
-;; (define (** a b)
-;;   (expt a b))
-
-(define ** expt)
+(define-syntax add1
+  (syntax-rules ()
+    ((_ x)   (+ x 1))))
 
 ) ; end module
-

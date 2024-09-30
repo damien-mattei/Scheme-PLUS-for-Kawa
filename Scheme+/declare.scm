@@ -15,29 +15,18 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (not-equal) ; R7RS
+(define-library (Scheme+ declare) ; R7RS
 
   (import (kawa base))
 
-  (export <> ≠)
+  (export declare)
 
+;; (declare ls dyn) ;; declare multiple variables
 
+(define-syntax declare
+  (syntax-rules ()
+    ((_ var1 ...) (begin
+		      (define var1 '())
+		      ...))))) ; end module
 
-;; not equal operator for numbers
-
-;; scheme@(guile-user)> (<> 1 2)
-;; #t
-;; scheme@(guile-user)> {1 <> 2}
-;; #t
-;; scheme@(guile-user)> {1 <> 1}
-;; #f
-
-;; should not be compatible with 'cut' (srfi 26)
-(define (<> x y)
-   (not (= x y)))
-
-(define (≠ x y)
-  (not (= x y)))
-
-) ; end module
 

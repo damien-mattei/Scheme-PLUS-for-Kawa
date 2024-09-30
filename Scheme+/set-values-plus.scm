@@ -17,7 +17,7 @@
 ;; modified by Damien Mattei
 
 
-(define-library (set-values-plus) ; R7RS
+(define-library (Scheme+ set-values-plus) ; R7RS
 
   (import (kawa base))
 

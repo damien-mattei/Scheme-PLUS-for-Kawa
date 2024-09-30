@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 9.4
+;; version 9.5 with submodules in subdirs
 
 ;; author: Damien MATTEI
 
@@ -25,7 +25,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+;; Examples:
+;; for MacOS
 ;; kawa -Dkawa.import.path=".:/Users/mattei/Scheme-PLUS-for-Kawa:"
+
+;; for Linux
+;; kawa -Dkawa.import.path=".:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa:./kawa/module_directory"
+
 
 
 ;; use :
@@ -45,27 +51,28 @@
 	               (if if-scheme)) ; standard imports and rename do in do-scheme
    (srfi 1) ; first ...
    (srfi 69); hash table
-   (array)
-   (for_next_step)
-   (overload)
+   
+   (Scheme+ array)
+   (Scheme+ for_next_step)
+   (Scheme+ overload)
 
-   (assignment)
-   (bitwise)
-   (block)
-   (bracket-apply)
-   (condx)
-   (declare)
-   (def)
-   (exponential)
-   (increment)
-   (modulo)
-   (nfx)
-   (not-equal)
-   (range)
-   (repeat-until)
-   (slice)
-   (while-do)
-   (if-then-else)) ; end import
+   (Scheme+ assignment)
+   (Scheme+ bitwise)
+   (Scheme+ block)
+   (Scheme+ bracket-apply)
+   (Scheme+ condx)
+   (Scheme+ declare)
+   (Scheme+ def)
+   (Scheme+ exponential)
+   (Scheme+ increment)
+   (Scheme+ modulo)
+   (Scheme+ nfx)
+   (Scheme+ not-equal)
+   (Scheme+ range)
+   (Scheme+ repeat-until)
+   (Scheme+ slice)
+   (Scheme+ while-do)
+   (Scheme+ if-then-else)) ; end import
 
  
 

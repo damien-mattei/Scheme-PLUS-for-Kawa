@@ -15,7 +15,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-library (while-do) ; R7RS
+(define-library (Scheme+ while-do) ; R7RS
 
   (import ;;(kawa base))
    (rename (kawa base) (do do-scheme)) ; standard imports and rename do in do-scheme

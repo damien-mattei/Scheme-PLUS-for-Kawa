@@ -16,7 +16,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-(define-library (repeat-until) ; R7RS
+(define-library (Scheme+ repeat-until) ; R7RS
 
   (import (kawa base))
 

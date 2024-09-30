@@ -19,7 +19,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-(define-library (condx) ; R7RS
+(define-library (Scheme+ condx) ; R7RS
 
   (import (kawa base))
 

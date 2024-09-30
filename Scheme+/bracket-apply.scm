@@ -68,16 +68,16 @@
 ;;   ($bracket-apply$next4list-args container (parse-square-brackets-arguments args-brackets)))
 
 ; Kawa already use $bracket-apply$ ...
-(define-library (bracket-apply) ; R7RS
+(define-library (Scheme+ bracket-apply) ; R7RS
 
   (import (kawa base)
 	  (srfi 1) ; bug in kawa
 	  (srfi 69); hash table
-	  (parse-square-brackets)
-	  (for_next_step)
-	  (array)
-	  (slice)
-	  (overload))
+	  (Scheme+ parse-square-brackets)
+	  (Scheme+ for_next_step)
+	  (Scheme+ array)
+	  (Scheme+ slice)
+	  (Scheme+ overload))
 	  ;(operators-list))
 
   (export bracket-apply

@@ -17,7 +17,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-(define-library (block) ; R7RS
+(define-library (Scheme+ block) ; R7RS
 
   (import (kawa base))
 

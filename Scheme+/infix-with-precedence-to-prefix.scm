@@ -19,40 +19,40 @@
 
 ;; Kawa version
 
-(define-library (infix-with-precedence-to-prefix) ; R7RS
+(define-library (Scheme+ infix-with-precedence-to-prefix) ; R7RS
 
   (import (kawa base)
-	  (operators-list) ;; bug syntax transformers
+	  (Scheme+ operators-list) ;; bug syntax transformers
 	  ;;(syntax)
-	  (syntax-plus)
+	  (Scheme+ syntax-plus)
 	  )
 	  
   (export !*prec-generic  
-	  !0-generic ;; bug syntax transformers
+	  ;;!0-generic ;; bug syntax transformers
 	  ;;!0-generic-syntax
 	  )
 
 
 ;;; evaluates `terms` symbolically or numerically as a basic infix expression
-(define (!0-generic terms  operator-precedence creator)
+;; (define (!0-generic terms  operator-precedence creator)
 
-  ;; (newline)
-  ;; (display "!0-generic : terms=") (display terms) (newline)
-  ;; (display "!0-generic : operator-precedence=") (display operator-precedence) (newline)
+;;   ;; (newline)
+;;   ;; (display "!0-generic : terms=") (display terms) (newline)
+;;   ;; (display "!0-generic : operator-precedence=") (display operator-precedence) (newline)
 
-  (define rv
-    (if (null? terms) ;; i added this null case but with correct input this should not be necessary
-	terms
-	(car (!*-generic (reverse terms) ; for exponentiation evaluated from right to left
-			 operator-precedence
-			 #;#f
-			 creator))))
+;;   (define rv
+;;     (if (null? terms) ;; i added this null case but with correct input this should not be necessary
+;; 	terms
+;; 	(car (!*-generic (reverse terms) ; for exponentiation evaluated from right to left
+;; 			 operator-precedence
+;; 			 #;#f
+;; 			 creator))))
 
-  ;; (display "!0-generic : rv=") (display rv) (newline)
-  ;; (newline)
-  rv
+;;   ;; (display "!0-generic : rv=") (display rv) (newline)
+;;   ;; (newline)
+;;   rv
 
-  )
+;;   )
 
 
 ;; (define (!0-generic-syntax terms creator)
@@ -179,6 +179,15 @@
 		      ;;odd?;(not odd?)
 		      creator))))
 
+;; wrap a null test
+(define (check-null-and-!*-generic terms operator-precedence creator)
+
+  (if (null? terms) ;; never for infix as there is e1 op1 e2 op2 e3 at least
+	terms
+	(!*-generic (reverse terms) ; start reversed for exponentiation (highest precedence operator)
+		    operator-precedence
+		    creator)))
+
 
 
 
@@ -211,16 +220,17 @@
   ;;(display "!*prec-generic : terms=") (display terms) (newline)
   ;;(display "!*prec-generic : operator-precedence=") (display operator-precedence) (newline)
 
-  (define rv
-    (if (null? terms) 
-	terms
-	(!*-generic (reverse terms) ; start reversed for exponentiation (highest precedence operator)
-		    operator-precedence
-		    ;;#f
-		    creator)))
+  (when (not (list? terms))
+    (display "!*prec-generic : WARNING , terms is not a list, perheaps expander is not psyntax (Portable Syntax)") (newline)
+    (display "!*prec-generic : terms=") (display terms) (newline))
 
-  ;;(display "!*prec-generic : rv=") (display rv) (newline)
-  ;;(newline)
+  (define rv
+    (check-null-and-!*-generic  terms ; start reversed for exponentiation (highest precedence operator)
+				operator-precedence
+				creator))
+
+  ;; (display "!*prec-generic : rv=") (display rv) (newline)
+  ;; (newline)
   
   rv)
 

@@ -17,10 +17,10 @@
 
 
 
-(define-library (range) ; R7RS
+(define-library (Scheme+ range) ; R7RS
 
   (import (kawa base)
-	  (for_next_step))
+	  (Scheme+ for_next_step))
 
   (export in-range
 	  reversed)

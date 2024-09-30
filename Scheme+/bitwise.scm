@@ -1,4 +1,4 @@
-(define-library (bitwise) ; R7RS
+(define-library (Scheme+ bitwise) ; R7RS
 
   (import (kawa base))
 

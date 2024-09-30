@@ -17,12 +17,10 @@
 
 
 
-;;(module-name for_next_step)
-
-(define-library (for_next_step) ; R7RS
+(define-library (Scheme+ for_next_step) ; R7RS
 
   (import (kawa base)
-	  (increment))
+	  (Scheme+ increment))
 	  
 
 

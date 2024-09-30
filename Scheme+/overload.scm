@@ -27,15 +27,14 @@
 
 ;; use with Scheme+: (require overload)
 
-;;(module-name overload)
 
 
-(define-library (overload) ; R7RS
+(define-library (Scheme+ overload) ; R7RS
 
   (import (kawa base)
 	  (srfi 1)
 	  (srfi 69) ; hash table
-	  (condx)) 
+	  (Scheme+ condx)) 
 
 
 ;;(require infix-operators) ;  on s'en fout car on parse de la syntaxe

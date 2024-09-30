@@ -445,9 +445,11 @@
                 (read-char port)
                 (list 'unquote-splicing (my-read port)))
               (#t
-                (list 'unquote (my-read port)))))
-        ((ismember? c digits) ; Initial digit.
-          (read-number port '()))
+               (list 'unquote (my-read port)))))
+	
+        ;; ((ismember? c digits) ; Initial digit.
+        ;;  (read-number port '()))
+	
         ((char=? c #\#) (process-sharp my-read port))
         ((char=? c #\.) (process-period port))
         ((or (char=? c #\+) (char=? c #\-))  ; Initial + or -
@@ -456,7 +458,11 @@
             (read-number port (list c))
             (string->symbol (fold-case-maybe port
               (list->string (cons c
-                (read-until-delim port neoteric-delimiters)))))))
+				  (read-until-delim port neoteric-delimiters)))))))
+
+	((ismember? c digits) ; Initial digit. (without + or - and not starting with . but could be an identifier starting with digits...)
+	 (read-number-or-identifier-starting-with-digits port '()))
+	
         (#t ; Nothing else.  Must be a symbol start.
           (string->symbol (fold-case-maybe port
             (list->string
@@ -593,7 +599,20 @@
   (define (read-number port starting-lyst)
     (string->number (list->string
       (append starting-lyst
-        (read-until-delim port neoteric-delimiters)))))
+              (read-until-delim port neoteric-delimiters)))))
+
+
+(define (read-number-or-identifier-starting-with-digits port starting-lyst)
+  
+  (let* ((str-number-or-identifier (list->string
+				    (append starting-lyst
+					    (read-until-delim port neoteric-delimiters))))
+	 (number (string->number str-number-or-identifier))) ; end declarative let
+    (if number ; string->number return #f if it was not possible to convert it in a number
+	number
+	(string->symbol str-number-or-identifier))))
+
+
 
   ; detect #| or |#
   (define (nest-comment port)

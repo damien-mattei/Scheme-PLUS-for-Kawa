@@ -18,7 +18,7 @@
 
 ;;(library (syntax) ;; R6RS fail
 
-(define-library (syntax-plus) ; R7RS
+(define-library (Scheme+ syntax-plus) ; R7RS
 
   (import (kawa base)
 	  (srfi 1))
