@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 9.5 with submodules in subdirs
+;; version 9.5
 
 ;; author: Damien MATTEI
 
