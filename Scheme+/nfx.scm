@@ -21,10 +21,11 @@
 
   (import (kawa base)
 	  (Scheme+ n-arity)
+
 	  (Scheme+ infix-with-precedence-to-prefix)
-	  (Scheme+ operators-list) ;; bug transformers syntax
+	  (Scheme+ operators-list) ;; bug transformers syntax : infix-operators-lst-for-parser-syntax is not imported at macro phase
 	  (Scheme+ operators)
-	  )
+	  (Scheme+ infix))
 
 
   (export $nfx$)
@@ -47,24 +48,58 @@
       (($nfx$ e1 op1 e2 op2 e3 op ...) ; note: i add op because in scheme op ... could be non existent
 
        ;;#'(list e1 op1 e2 op2 e3 op ...)
+
+       ;;(begin ;; (display "$nfx$ : #'(e1 op1 e2 op2 e3 op ...) : ")
+	      ;; (display #'(e1 op1 e2 op2 e3 op ...))
+	      ;; (newline)
+	      ;; (display (get-operators-lst-syntax)) (newline)
+	      ;; (foo)
+	      ;; (infix? #'(e1 op1 e2 op2 e3 op ...)
+	      ;; 			    ;;operators-lst-syntax))
+	      ;; 			    (get-operators-lst-syntax))
+	      ;; (when (not (infix? #'(e1 op1 e2 op2 e3 op ...)
+	      ;; 			    ;;operators-lst-syntax))
+	      ;; 			    (get-operators-lst-syntax)))
+	      ;; 			    ;;op-lst-stx))
+		   
+	      ;; 	   (error "$nfx$ : arguments do not form an infix expression : here is #'(e1 op1 e2 op2 e3 op ...) for debug:"
+	      ;; 		  #'(e1 op1 e2 op2 e3 op ...)))
        
 	 (with-syntax ;; let
 			 
 	     ((parsed-args
 
-	       (let ((expr (car
-			    (!*prec-generic #'(e1 op1 e2 op2 e3 op ...) ; apply operator precedence rules
-				       ;;infix-operators-lst-for-parser-syntax
-				       (get-infix-operators-lst-for-parser-syntax)
-				       (lambda (op a b) (list op a b))))))
+	       (begin
+	       ;; (let* ((ifx-op-stx (get-infix-operators-lst-for-parser-syntax))
+	       ;; 	      (op-lst-stx (apply append ifx-op-stx)))
 
-		 (if (or (isDEFINE? expr)
-			 (isASSIGNMENT? expr))
-			 ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
-			 (n-arity expr)
-			 expr ))))
+		 ;; (display "$nfx$: #'(e1 op1 e2 op2 e3 op ...)=") (display #'(e1 op1 e2 op2 e3 op ...)) (newline)
+		 		
+		 ;; pre-check we have an infix expression because parser can not do it
+		 ;;(display op-lst-stx) (newline)
+		 (when (not (infix? #'(e1 op1 e2 op2 e3 op ...)
+				    ;;operators-lst-syntax))
+				    (get-operators-lst-syntax)))
+				    ;;op-lst-stx))
+		   
+		   (error "$nfx$ : arguments do not form an infix expression : here is #'(e1 op1 e2 op2 e3 op ...) for debug:"
+			  #'(e1 op1 e2 op2 e3 op ...)))
+
+		 (let ((expr (car
+			      (!*prec-generic #'(e1 op1 e2 op2 e3 op ...) ; apply operator precedence rules
+					      ;;infix-operators-lst-for-parser-syntax
+					      (get-infix-operators-lst-for-parser-syntax)
+					      ;;ifx-op-stx
+					      (lambda (op a b) (list op a b))))))
+
+		   (if (or (isDEFINE? expr)
+			   (isASSIGNMENT? expr))
+		       ;;  make n-arity for <- and <+ only (because could be false with ** , but not implemented in n-arity for now)
+		       (n-arity expr)
+		       expr )))))
+	   
 	   (display "$nfx$ : parsed-args=") (display #'parsed-args) (newline)
-	   #'parsed-args)))))
-
+	   #'parsed-args)))));) ; end begin
+  
 ) ; end module
 

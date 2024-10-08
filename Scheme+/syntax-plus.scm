@@ -62,9 +62,9 @@
 
   (define (member-syntax x lst)
     (any (lambda (y)
-	   ;;(display "member-syntax : x=") (display x) (newline)
-	   ;;(display "member-syntax : y=") (display y) (newline)
-	   ;;(newline)
+	   ;; (display "member-syntax : x=") (display x) (newline)
+	   ;; (display "member-syntax : y=") (display y) (newline)
+	   ;; (newline)
 	   ;;(check-syntax=? x y))
 	   (datum=? x y))
 	 lst))

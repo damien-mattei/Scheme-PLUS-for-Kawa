@@ -22,7 +22,8 @@
 
   (import (kawa base)
 	  ;;(syntax)
-	  (Scheme+ syntax-plus)
+	  ;;(Scheme+ syntax-plus) ;;  bug in Kawa
+	  (srfi 1)
 	  )
 
   (export infix?)
@@ -32,11 +33,44 @@
 
 
 
+(define (datum=? obj1 obj2)
+    (eq? (syntax->datum obj1)
+	 (syntax->datum obj2)))
+
+  ;; (define op-lst (list #'* #'+ #'- #'/))
+  ;; op-lst
+  ;; (#<syntax#10 * in #151> #<syntax#11 + in #152> #<syntax#12 - in #153>
+  ;;  #<syntax#13 / in #154>)
+  ;;  (member-syntax #'+ op-lst)
+  ;;#t
+
+
+;;   #|kawa:9|# (member-syntax '+ '(- + / *))
+;; #t
+;; #|kawa:10|# (member-syntax + (list - + / *))
+;; #t
+;; #|kawa:11|# (member-syntax + (list - / *))
+;; #f
+;; #|kawa:12|# (member-syntax '+ '(- / *))
+;; #f
+
+  (define (member-syntax x lst)
+    (any (lambda (y)
+	   ;; (display "member-syntax : x=") (display x) (newline)
+	   ;; (display "member-syntax : y=") (display y) (newline)
+	   ;; (newline)
+	   ;;(check-syntax=? x y))
+	   (datum=? x y))
+	 lst))
+
+
+
+  
 ;; check that expression is infix
 (define (infix? expr oper-lst)
 
-  ;;(display "infix? : expr=") (display expr) (newline)
-  ;;(display "infix? : oper-lst=") (display oper-lst) (newline)
+  ;; (display "infix? : expr=") (display expr) (newline)
+  ;; (display "infix? : oper-lst=") (display oper-lst) (newline)
   
   (define (infix-rec? expr) ; (op1 e1 op2 e2 ...)
     ;;(display "infix-rec? : expr=") (display expr) (newline)

@@ -27,9 +27,15 @@
 	  
 	  definition-operator-syntax
 	  assignment-operator-syntax
+
 	  
-	  infix-operators-lst-for-parser-syntax
+	  
+	  infix-operators-lst-for-parser-syntax ; bug: export can not work in macro expand !
+	  
 	  get-infix-operators-lst-for-parser-syntax ; for Kawa
+	  get-operators-lst-syntax
+
+	  
 	  
 	  operators-lst
 	  operators-lst-syntax)
@@ -153,6 +159,8 @@
 (define (get-infix-operators-lst-for-parser-syntax)
   infix-operators-lst-for-parser-syntax)
 
+(define (get-operators-lst-syntax)
+  operators-lst-syntax)
 
 
 ;; liste à plate des operateurs

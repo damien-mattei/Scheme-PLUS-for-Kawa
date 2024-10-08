@@ -1,3 +1,24 @@
+try to uniform bracket-apply $bracket-apply$ $bracket-list$
+type[args]
 
+
+https://www.gnu.org/software//kawa/Parameterized-Types.html
+
+https://www.gnu.org/software//kawa/tutorial/Sequences.html
+
+#|kawa:4|# (define v1 ::gnu.lists.FVector[gnu.math.IntNum] [4 5 6])
+#|kawa:5|# v1
+#(4 5 6)
+#|kawa:6|# '(define v1 ::gnu.lists.FVector[gnu.math.IntNum] [4 5 6])
+(define v1 :: ($bracket-apply$ gnu.lists.FVector gnu.math.IntNum)
+ ($bracket-list$ 4 5 6))
+#|kawa:7|# [4 5 6]
+#(4 5 6)
+#|kawa:8|# [#(1 2) 3 4]
+#(#(1 2) 3 4)
+#|kawa:9|# '[#(1 2) 3 4]
+($bracket-list$ #(1 2) 3 4)
+#|kawa:10|# '[4 5 6]
+($bracket-list$ 4 5 6)
 
 
