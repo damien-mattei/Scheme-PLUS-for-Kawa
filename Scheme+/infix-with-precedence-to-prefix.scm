@@ -27,51 +27,11 @@
 	  (Scheme+ syntax-plus)
 	  )
 	  
-  (export !*prec-generic  
-	  ;;!0-generic ;; bug syntax transformers
-	  ;;!0-generic-syntax
+  (export !*prec-generic   ;; had possible bug syntax transformers in Kawa language
 	  )
 
 
-;;; evaluates `terms` symbolically or numerically as a basic infix expression
-;; (define (!0-generic terms  operator-precedence creator)
 
-;;   ;; (newline)
-;;   ;; (display "!0-generic : terms=") (display terms) (newline)
-;;   ;; (display "!0-generic : operator-precedence=") (display operator-precedence) (newline)
-
-;;   (define rv
-;;     (if (null? terms) ;; i added this null case but with correct input this should not be necessary
-;; 	terms
-;; 	(car (!*-generic (reverse terms) ; for exponentiation evaluated from right to left
-;; 			 operator-precedence
-;; 			 #;#f
-;; 			 creator))))
-
-;;   ;; (display "!0-generic : rv=") (display rv) (newline)
-;;   ;; (newline)
-;;   rv
-
-;;   )
-
-
-;; (define (!0-generic-syntax terms creator)
-
-;;   (newline)
-;;   (display "!0-generic : terms=") (display terms) (newline)
-
-;;   (define rv
-;;     (if (null? terms) ;; i added this null case but with correct input this should not be necessary
-;; 	terms
-;; 	(car (!*-generic (reverse terms) ; for exponentiation evaluated from right to left
-;; 			 infix-operators-lst-for-parser-syntax
-;; 			 creator))))
-
-;;   ;; (display "!0-generic : rv=") (display rv) (newline)
-;;   ;; (newline)
-;;   rv
-
-;;   )
 
 
 ;; evaluate one group of operators in the list of terms
