@@ -60,6 +60,29 @@
 ;; 		 #t))))))) ; eval suceeded => defined
 
 
+
+;; mattei@acer:~$ kawa
+;; #|kawa:1|# (define-syntax defined-symbol?
+;;   (syntax-rules ()
+;;     ((_ x) (call-with-current-continuation 
+;; 	    (lambda (exit)
+;; 	      (with-exception-handler
+;; 	       (lambda (e)
+;; 		 (display "defined-symbol? : undefined") (newline)
+;; 		 (exit #f)) ; eval failed => not defined
+;; 	       (lambda ()
+;; 		 (eval x (interaction-environment))
+;; 		 #t)))))))#|.....2|# #|.....3|# #|.....4|# #|.....5|# #|.....6|# #|.....7|# #|.....8|# #|.....9|# #|....10|# #|....11|# 
+;; #|kawa:12|# (define rv (defined-symbol? 'r)
+;; #|.....13|# )
+;; defined-symbol? : undefined
+;; #|kawa:14|# rv
+;; #|kawa:15|# (display rv)
+;; #f
+;; #|kawa:16|# 
+;; #|kawa:17|# 3
+
+
 ;; #|kawa:86|# (define k 0)
 ;; #|kawa:87|# (let loop () (if (< k 4) (let () (display k) (newline) (<- k (+ k 1)) (loop))))
 ;; if-defined : where=#t
