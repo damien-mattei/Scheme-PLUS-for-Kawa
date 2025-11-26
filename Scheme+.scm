@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 9.5
+;; version 9.7
 
 ;; author: Damien MATTEI
 
@@ -109,6 +109,7 @@
 	%
 	<< >>
 	& ∣
+	;~ ; bitwise negation
 	$nfx$ ;;!*prec
 	
 	$ovrld-ht$

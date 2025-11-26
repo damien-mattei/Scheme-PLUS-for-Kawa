@@ -15,6 +15,7 @@
 
 (define & logand)
 (define ∣ logior) ;; pipe is not via mac keyboard but  this should be  U+2223
+;(define ^ logxor) ; TODO uncomment it to activate it
 
 
 ) ; end module
