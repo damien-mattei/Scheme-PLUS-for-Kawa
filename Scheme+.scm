@@ -109,6 +109,7 @@
 	%
 	<< >>
 	& ∣
+	;^ ; bitwise xor
 	;~ ; bitwise negation
 	$nfx$ ;;!*prec
 	
