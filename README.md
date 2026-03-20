@@ -67,6 +67,7 @@
   of a Makefile for Scheme+ code building the above examples.</a>
 
   <br>
+  Note: due to internal bugs in Kawa scheme in syntax transformers (some macro expansion phase not importing code) the Scheme+ only works in REPL and will not be updated in future.
   </body>
 
 
