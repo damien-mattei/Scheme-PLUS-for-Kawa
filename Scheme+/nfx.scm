@@ -23,7 +23,7 @@
 	  (Scheme+ n-arity)
 
 	  (Scheme+ infix-with-precedence-to-prefix)
-	  (Scheme+ operators-list) ;; bug transformers syntax : infix-operators-lst-for-parser-syntax is not imported at macro phase
+	  (Scheme+ operators-list) ;; bug transformers syntax : infix-operators-lst-for-parser-syntax is not imported at macro phase when compiled, works in REPL
 	  (Scheme+ operators)
 	  (Scheme+ infix))
 
@@ -31,6 +31,10 @@
   (export $nfx$)
 
 
+
+
+
+  
   
 ;; #|kawa:1|# (import (nfx))
 ;; #|kawa:2|# ($nfx$ 3 * 5 + 2)
@@ -77,18 +81,118 @@
 		 		
 		 ;; pre-check we have an infix expression because parser can not do it
 		 ;;(display op-lst-stx) (newline)
+
+		 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;added for macro bug syntax transformer phase ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+		 ;; (define definition-operator (list '<+ '+>
+		 ;; 				   '⥆ '⥅
+		 ;; 				   ':+ '+:))
+
+		 ;; (define assignment-operator (list '<- '->
+		 ;; 				   '← '→
+		 ;; 				   ':=  '=:
+		 ;; 				   '<v 'v>
+		 ;; 				   '⇜ '⇝))
+
+
+		 ;; (define infix-operators-lst-for-parser
+
+		 ;;   (list
+		    
+		 ;;    (list 'expt '**)
+		 ;;    (list '* '/ '%)
+		    
+		 ;;    (list '+ '-)
+		    
+		 ;;    (list '<< '>>)
+		    
+		 ;;    (list '&)
+		 ;;    (list '^)
+		 ;;    (list '∣)
+		    
+		 ;;    (list '< '> '= '≠ '<= '>= '<>)
+
+		 ;;    (list 'and)
+		    
+		 ;;    (list 'or)
+		    
+		 ;;    (append assignment-operator 
+		 ;; 	    definition-operator)
+		    
+		 ;;    )
+		   
+		 ;;   )
+
+		 
+		 ;; (define definition-operator-syntax (list #'<+ #'+>
+		 ;; 					  #'⥆ #'⥅
+		 ;; 					  #':+ ;;(syntax +:) ;#'+:
+		 ;; 					  ))
+
+		 ;; (define assignment-operator-syntax (list #'<- #'->
+		 ;; 					  #'← #'→
+		 ;; 					  #':= ;;(syntax =:) ;#'=:
+		 ;; 					  #'<v #'v>
+		 ;; 					  #'⇜ #'⇝))
+
+
+
+		 ;; (define infix-operators-lst-for-parser-syntax
+
+		 ;;   (list
+		 ;;    (list #'expt #'**)
+		 ;;    (list #'* #'/ #'%)
+		 ;;    (list #'+ #'-)
+		    
+		 ;;    (list #'<< #'>>)
+
+		 ;;    (list #'& #'∣)
+
+		 ;;    (list #'< #'> #'= #'≠ #'<= #'>= #'<>)
+
+		 ;;    (list #'and)
+
+		 ;;    (list #'or)
+
+		 ;;    assignment-operator-syntax
+		 ;;    definition-operator-syntax 
+		 ;;    )
+
+		 ;;   )
+
+
+		 ;; (define (get-infix-operators-lst-for-parser-syntax)
+		 ;;   infix-operators-lst-for-parser-syntax)
+
+		 ;; (define (get-operators-lst-syntax)
+		 ;;   operators-lst-syntax)
+
+
+		 ;; ;; liste à plate des operateurs
+		 ;; (define operators-lst
+		 ;;   (apply append infix-operators-lst-for-parser))
+
+		 ;; (define operators-lst-syntax
+		 ;;   (apply append infix-operators-lst-for-parser-syntax))
+
 		 (when (not (infix? #'(e1 op1 e2 op2 e3 op ...)
 				    ;;operators-lst-syntax))
 				    (get-operators-lst-syntax)))
-				    ;;op-lst-stx))
+		   ;;op-lst-stx))
 		   
 		   (error "$nfx$ : arguments do not form an infix expression : here is #'(e1 op1 e2 op2 e3 op ...) for debug:"
 			  #'(e1 op1 e2 op2 e3 op ...)))
 
 		 (let ((expr (car
 			      (!*prec-generic #'(e1 op1 e2 op2 e3 op ...) ; apply operator precedence rules
-					      ;;infix-operators-lst-for-parser-syntax
-					      (get-infix-operators-lst-for-parser-syntax)
+					      infix-operators-lst-for-parser-syntax
+					      ;;(get-infix-operators-lst-for-parser-syntax)
 					      ;;ifx-op-stx
 					      (lambda (op a b) (list op a b))))))
 
