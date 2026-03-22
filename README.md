@@ -21,6 +21,9 @@
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
           style="color: #999999;"> <font size="+2">version 9.5 for Kawa Scheme<br>
           </font></span></b></h1>
+
+
+<b>Warning: due to internal bugs in Kawa scheme in syntax transformers (some macro expansion phase not importing code) the Scheme+ can not be compiled in classes.It only works in REPL and will not be updated in future until the Kawa bugs are fixed.Scheme+ for Racket runs perfectly and should be used.</b>
     <p style="text-align: center;">
 	The general documentation of Scheme+ is available here:<br>
   <br>
