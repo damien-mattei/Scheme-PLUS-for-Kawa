@@ -28,9 +28,11 @@
   href="https://github.com/damien-mattei/Scheme-PLUS-for-Guile/blob/main/README.md">Scheme+
   general documentation.</a>
   <br>
-  Changes of version 9.7: now Scheme+ can be compiled in java/jakarta classes<br>
-  Support for Jakarta<br>
-  compile it with : kawa -C Scheme+.scm<br>
+  <br>
+  <b>Changes of version 9.7:</b> now Scheme+ can be compiled in java/jakarta classes<br>
+  <br>
+  Support for Jakarta<br><br>
+  Compile it with : <b>kawa -C Scheme+.scm</b><br><br>
   Fixes Kawa "bug" about syntax transformers not importing definitions at early phase in macro extansion (use <a
   href="https://www.gnu.org/software/kawa/Definitions.html#idm45230723208176">define-early-constant</a> in code).The problem was only existing when compiled in classes,not in REPL strangely.(note that classes can occurs java out of memory error,which is not happening in REPL , another Kawa bug i presume or require some special options perheaps in compilation)
   <br>
