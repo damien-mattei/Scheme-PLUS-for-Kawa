@@ -57,19 +57,19 @@
 <br>
 <br>
     <a
-  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa%2B.scm">Example
+  href="https://github.com/damien-mattei/Scheme-PLUS-for-Kawa/blob/main/examples/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa%2B.scm">Example
   of Scheme+ code for Kawa.</a>
   <br>
   <br>
    <a
-  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/kawa/matrix%2B.scm">Another
+  href="https://github.com/damien-mattei/Scheme-PLUS-for-Kawa/blob/main/examples/matrix%2B.scm">Another
    example
   of Scheme+ code implementing Matrix and multiplication.</a>
   <br>
   <br>
   
   <a
-  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/Makefile">Example
+  href="https://github.com/damien-mattei/Scheme-PLUS-for-Kawa/blob/main/examples/Makefile">Example
   of a Makefile for Scheme+ code building the above examples.</a>
 
   <br>
