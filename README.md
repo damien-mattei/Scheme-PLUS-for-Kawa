@@ -34,7 +34,7 @@
   Support for Jakarta<br><br>
   Compile it with : <b>kawa -C Scheme+.scm</b><br><br>
   Fixes Kawa "bug" about syntax transformers not importing definitions at early phase in macro extansion (use <a
-  href="https://www.gnu.org/software/kawa/Definitions.html#idm45230723208176">define-early-constant</a> in code).The problem was only existing when compiled in classes,not in REPL strangely.(note that classes can occurs java out of memory error,which is not happening in REPL , another Kawa bug i presume or require some special options perheaps in compilation)
+  href="https://www.gnu.org/software/kawa/Definitions.html#idm45230723208176">define-early-constant</a> in code).The problem was only existing when compiled in classes,not in REPL strangely.(note that classes can occurs java out of memory error on very intensive computations taking hours,which is happening in REPL strangely at end of computation , another Kawa bug i presume or require some special options perheaps in compilation)
   <br>
   <br>
   Specific documentation for Kawa Scheme:
