@@ -19,17 +19,20 @@
     <p style="text-align: center;"><br>
     </p>
     <h1 style="text-align: center;"><b><span style="color: #000099;">Scheme+</span></b><b><span
-          style="color: #999999;"> <font size="+2">version 9.5 for Kawa Scheme<br>
+          style="color: #999999;"> <font size="+2">version 9.7 for Kawa Scheme<br>
           </font></span></b></h1>
-
-
-<b>Warning: due to internal bugs in Kawa scheme in syntax transformers (some macro expansion phase not importing code) the Scheme+ can not be compiled in classes.It only works in REPL and will not be updated in future until the Kawa bugs are fixed.Scheme+ for Racket runs perfectly and should be used.</b>
     <p style="text-align: center;">
 	The general documentation of Scheme+ is available here:<br>
   <br>
     <a
   href="https://github.com/damien-mattei/Scheme-PLUS-for-Guile/blob/main/README.md">Scheme+
   general documentation.</a>
+  <br>
+  Changes of version 9.7: now Scheme+ can be compiled in java/jakarta classes<br>
+  Support for Jakarta<br>
+  compile it with : kawa -C Scheme+.scm<br>
+  Fixes Kawa "bug" about syntax transformers not importing definitions at early phase in macro extansion (use <a
+  href="https://www.gnu.org/software/kawa/Definitions.html#idm45230723208176">define-early-constant</a> in code).The problem was only existing when compiled in classes,not in REPL strangely.(note that classes can occurs java out of memory error,which is not happening in REPL , another Kawa bug i presume or require some special options perheaps in compilation)
   <br>
   <br>
   Specific documentation for Kawa Scheme:
@@ -66,10 +69,10 @@
   <br>
   
   <a
-  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/Makefile.Kawa">Example
+  href="https://github.com/damien-mattei/AI_Deep_Learning/blob/main/Makefile">Example
   of a Makefile for Scheme+ code building the above examples.</a>
 
   <br>
-  <b>Note: due to internal bugs in Kawa scheme in syntax transformers (some macro expansion phase not importing code) the Scheme+ can not be compiled in classes.It only works in REPL and will not be updated in future until the Kawa bugs are fixed.</b>
+  
   </body>
 

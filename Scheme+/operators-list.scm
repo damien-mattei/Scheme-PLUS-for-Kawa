@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,10 +27,8 @@
 	  
 	  definition-operator-syntax
 	  assignment-operator-syntax
-
 	  
-	  
-	  infix-operators-lst-for-parser-syntax ; bug: export can not work in macro expand !
+	  infix-operators-lst-for-parser-syntax ; bug: export can not work in macro expand ! unless define-early-constant is used
 	  
 	  get-infix-operators-lst-for-parser-syntax ; for Kawa
 	  get-operators-lst-syntax
@@ -41,18 +39,18 @@
 	  operators-lst-syntax)
 
 
-(define definition-operator (list '<+ '+>
+(define-early-constant definition-operator (list '<+ '+>
 				  '⥆ '⥅
 				  ':+ '+:))
 
-(define assignment-operator (list '<- '->
+(define-early-constant assignment-operator (list '<- '->
 				  '← '→
 				  ':=  '=:
 				  '<v 'v>
 				  '⇜ '⇝))
 
 
-(define infix-operators-lst-for-parser
+(define-early-constant infix-operators-lst-for-parser
 
   (list
     
@@ -119,12 +117,12 @@
 ;;                                    #<syntax#321 :+ in #716> +:))
 
 
-(define definition-operator-syntax (list #'<+ #'+>
+(define-early-constant definition-operator-syntax (list #'<+ #'+>
 					 #'⥆ #'⥅
 					 #':+ ;;(syntax +:) ;#'+:
 					 ))
 
-(define assignment-operator-syntax (list #'<- #'->
+(define-early-constant assignment-operator-syntax (list #'<- #'->
 					 #'← #'→
 					 #':= ;;(syntax =:) ;#'=:
 					 #'<v #'v>
@@ -132,7 +130,7 @@
 
 
 
-(define infix-operators-lst-for-parser-syntax
+(define-early-constant infix-operators-lst-for-parser-syntax
 
   (list
     (list #'expt #'**)
@@ -157,17 +155,20 @@
 
 
 (define (get-infix-operators-lst-for-parser-syntax)
-  infix-operators-lst-for-parser-syntax)
+  
+  ;(display "operators-list : get-infix-operators-lst-for-parser-syntax: infix-operators-lst-for-parser-syntax = ") (display infix-operators-lst-for-parser-syntax) (newline)
+  infix-operators-lst-for-parser-syntax
+  )
 
 (define (get-operators-lst-syntax)
   operators-lst-syntax)
 
 
 ;; liste à plate des operateurs
-(define operators-lst
+(define-early-constant operators-lst
   (apply append infix-operators-lst-for-parser))
 
-(define operators-lst-syntax
+(define-early-constant operators-lst-syntax
   (apply append infix-operators-lst-for-parser-syntax))
 
 

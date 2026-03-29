@@ -10,24 +10,29 @@
 ; use MacVim to show ALL the characters of this file (not Emacs, not Aquamacs)
 ; jeu de couleurs: Torte ou Koehler
 
+; 2025 and after:
 
-; make -f Makefile.Kawa all
+; export CLASSPATH=".:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa/Scheme+"
+
+; make clean
+; make all
+
+; cd classes_files_directory
+
+; kawa exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa
+
 
 ; or:
-
-
-; kawa curly-infix2prefix4kawa.scm  --kawa --srfi-105 ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+.scm | tr -d '|' > ../AI_Deep_Learning/exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm
-
-
-;kawa -Dkawa.import.path=".:/Users/mattei/Scheme-PLUS-for-Kawa:./kawa/module_directory"
 
 ; (load "exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa.scm")
 
 
 
+(module-name exo_retropropagationNhidden_layers_matrix_v2_by_vectors4kawa+)
+
 (require Scheme+)
-(require array)
-(require matrix)
+(import (Scheme+ array)) ;(require Scheme+.array)
+(require matrix+)
 
 
 
@@ -209,8 +214,9 @@
        
        {z_1 <- #(1) + z[i]} ; + operator has been overloaded to append scheme vectors
 
-       ;;(display "z_1 = ") (display z_1) (newline)
-
+       ;(display "z_1 = ") (display z_1) (newline)
+       ;(display "M = ") (display M) (newline)
+       
        {z̃[i + 1] <- M[i] * z_1} ; z̃ = matrix * vector , return a vector
 
        ;;(display "z̃[i + 1] = ") (display {z̃[i + 1]}) (newline)
@@ -263,6 +269,10 @@
 		 
 	       	 (if {it % 1000 = 0} then
 		     (display it)(newline))
+
+		 (if {it % 10000 = 0} then
+		     (display "calling Java Garbage Collector") (newline)
+		     (java.lang.System:gc))
 
 		 ;;(display it)(newline)
 		 
@@ -439,6 +449,8 @@
 
 
 (r3:apprentissage Llearning)
+
+(java.lang.System:gc)
 
 (r3:test Ltest)
 

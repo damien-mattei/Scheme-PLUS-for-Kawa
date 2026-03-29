@@ -131,8 +131,8 @@
 	     
 	((equal? (quote bracket-apply) (syntax->datum #'brket-applynext)) ;; curly-infix
 
-	 (newline)
-	 (display "<- : #'(index ...) = ") (display #'(index ...)) (newline)
+	 ;;(newline)
+	 ;;(display "<- : #'(index ...) = ") (display #'(index ...)) (newline)
 
 	 ;; we parse arguments at posteriori of SRFI 105 parser
 	 (with-syntax ((parsed-args
@@ -143,7 +143,7 @@
 
 			    ) ; end definitions
 			   
-			   (display "<- : #'parsed-args=") (display #'parsed-args) (newline)
+			   ;;(display "<- : #'parsed-args=") (display #'parsed-args) (newline)
 
 			   #'(assignment-next4list-args container parsed-args expr)))
 

@@ -1,16 +1,18 @@
+
 ;; matrix
 
 ;; Kawa version
 
-
+; DEPRECATED:
 ; kawa curly-infix2prefix4kawa.scm  ../AI_Deep_Learning/kawa/matrix+.scm | tr -d '|'  > ../AI_Deep_Learning/kawa/matrix.scm
 
 ; kawa -Dkawa.import.path=".:/Users/mattei/Scheme-PLUS-for-Kawa:./kawa"
 
-;; use with Scheme+: (require matrix)
+
+;; use with Scheme+: (require matrix+)
 
 
-(module-name "matrix")
+(module-name "matrix+")
 
 (export multiply-matrix-matrix
 	multiply-matrix-vector
@@ -31,7 +33,7 @@
 
 (require Scheme+)
 
-(require array)
+(require Scheme+.array)
 
 ;; first stage overloading
 ;(define orig* *)

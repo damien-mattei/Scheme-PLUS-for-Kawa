@@ -2,7 +2,7 @@
 
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2024-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 (define-library (Scheme+ infix-with-precedence-to-prefix) ; R7RS
 
   (import (kawa base)
-	  (Scheme+ operators-list) ;; bug syntax transformers
 	  ;;(syntax)
 	  (Scheme+ syntax-plus)
 	  )
@@ -150,7 +149,7 @@
 
 
 
-
+  
 
 ;; evaluate a list of groups of operators in the list of terms - forward in operator groups
 (define (!*-generic terms operator-groups #;odd? creator)
@@ -177,8 +176,8 @@
 
 (define (!*prec-generic terms  operator-precedence creator)   ;; precursor of !*-generic
 
-  ;;(display "!*prec-generic : terms=") (display terms) (newline)
-  ;;(display "!*prec-generic : operator-precedence=") (display operator-precedence) (newline)
+  ;(display "!*prec-generic : terms=") (display terms) (newline)
+  ;(display "!*prec-generic : operator-precedence=") (display operator-precedence) (newline)
 
   (when (not (list? terms))
     (display "!*prec-generic : WARNING , terms is not a list, perheaps expander is not psyntax (Portable Syntax)") (newline)

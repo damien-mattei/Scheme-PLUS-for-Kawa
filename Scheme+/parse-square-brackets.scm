@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2024-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 ;; some optimizer procedures that parse square brackets arguments
 
-;; was optimise-infix-slice.scm
 
 
 (define-library (Scheme+ parse-square-brackets) ; R7RS
@@ -32,7 +31,7 @@
    (Scheme+ def)
    (Scheme+ declare)
    (Scheme+ block)
-   ;;(syntax)
+ 
    (Scheme+ syntax-plus)
    (Scheme+ slice)
    (Scheme+ infix-with-precedence-to-prefix)
@@ -145,9 +144,10 @@
   ;;(newline) (display "parse-square-brackets-arguments-lister-syntax : args-brackets=") (display args-brackets) (newline)
   (parse-square-brackets-arguments args-brackets ;; generic procedure
 					     (lambda (op a b) (list op a b))
-					     ;;infix-operators-lst-for-parser-syntax ;; bug in Kawa : can not be exported here
-					     (get-infix-operators-lst-for-parser-syntax)
-					     (get-operators-lst-syntax)))
+					     infix-operators-lst-for-parser-syntax ;; corrected bug in Kawa that could not be exported here
+					     ;;(get-infix-operators-lst-for-parser-syntax)
+					     #;(get-operators-lst-syntax)
+					     operators-lst-syntax))
 					    
 
 ;; DEPRECATED

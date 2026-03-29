@@ -1,6 +1,6 @@
 ;; This file is part of Scheme+
 
-;; Copyright 2024 Damien MATTEI
+;; Copyright 2024-2025 Damien MATTEI
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
   (import (rename (kawa base) (if if-scheme)) ;; no more need as if-scheme replaced by cond
 	  (srfi 1)
 	  (Scheme+ insert)
-	  ;;(syntax)
 	  (Scheme+ syntax-plus)
 	  )
 

@@ -25,17 +25,24 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+;; 2025 and after:
+;; for compiling Scheme+ in Java/Jakarta classes (not necessary if you load it in REPL) :
+;;
+;  export CLASSPATH=".:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa/Scheme+"
+;  kawa -C Scheme+.scm
+
+;; DEPRECATED
 ;; Examples:
 ;; for MacOS
 ;; kawa -Dkawa.import.path=".:/Users/mattei/Scheme-PLUS-for-Kawa:"
 
 ;; for Linux
 ;; kawa -Dkawa.import.path=".:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa:./kawa/module_directory"
-
+;; END DEPRECATED
 
 
 ;; use :
-
+; export CLASSPATH=".:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa:/home/mattei/Dropbox/git/Scheme-PLUS-for-Kawa/Scheme+"
 ;;(import (Scheme+))
 ;; or :
 ;;(require Scheme+)

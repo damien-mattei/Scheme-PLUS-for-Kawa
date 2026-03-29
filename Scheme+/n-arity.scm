@@ -21,7 +21,8 @@
 
   (import (kawa base)
 	  (Scheme+ operators)
-	  (Scheme+ operators-list))
+	  ;(Scheme+ operators-list) ; seems useless
+	  )
 	  
   (export n-arity)
 
