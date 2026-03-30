@@ -1,6 +1,6 @@
 ;; Scheme+.scm
 
-;; version 9.7
+;; version 9.8
 
 ;; author: Damien MATTEI
 
@@ -8,7 +8,7 @@
 
 ;; Kawa version
 
-;; Copyright 2021-2024 Damien MATTEI
+;; Copyright 2021-2025 Damien MATTEI
 
 ;; e-mail: damien.mattei@gmail.com
 

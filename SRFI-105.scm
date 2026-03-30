@@ -26,6 +26,10 @@
     ((_ expr var)
      (set! var (insert expr var)))))
 
+
+(define comment #f) ; used for comment removal
+
+
   ; ------------------------------
   ; Curly-infix support procedures
   ; ------------------------------
@@ -278,7 +282,8 @@
 		  
 		  (#t
 		   ;; here we get a symbolic scheme expression
-		   (let ((datum2 (cons datum
+		   
+		   #;(let ((datum2 (cons datum
 				       (my-read-delimited-list my-read stop-char port))))
 		     
 		     ;; (when (and (list? datum2)
@@ -287,7 +292,24 @@
 		     ;; 	   (define datum3 (call-parse-if-args (cdr datum2)))
 		     ;; 	   (set! datum2 datum3))
 		     
-		     datum2))))))))
+		     datum2)
+
+		   (let ((expression '()))
+
+		     (if comment ; drop the datum
+			 (begin
+			   (when comment
+			     (set! comment #f)) ; reset the comment flag before
+			   
+			   (set! expression (my-read-delimited-list my-read stop-char port))) ; drop the datum as it is a commented expression
+
+                         ; keep the datum
+			 (set! expression (cons datum ;; normal case
+						(my-read-delimited-list my-read stop-char port))))
+		     		     
+		     expression)
+
+		   )))))))
       
       ;; (display  "my-read-delimited-list return value : " stderr)
       ;; (display rv stderr)
@@ -474,6 +496,7 @@
     (underlying-read curly-infix-read-real port))
 
   (define (curly-infix-read . port)
+    (set! comment #f)
     (if (null? port)
       (curly-infix-read-real (current-input-port))
       (curly-infix-read-real (car port))))
@@ -668,7 +691,11 @@
 	    ;; > (+ 1 #;{1 + 2} 3)
 	    ;; 4
 	    ((char=? c #\;) ;(read-error "SRFI-105 REPL : Unsupported #; extension"))
-	     (my-read port) (my-read port))
+	     ;(my-read port) (my-read port)
+	     (let ((comy (my-read port))) ; commented expression
+               (set! comment #t)
+               comy) ; must be returned but will be dropped later
+	     )
 
 	    ;; this remove #lang racket on anything else but i do not want it to be like that
 	    ;; removing any line starting with #l is not the good way

@@ -29,6 +29,9 @@
   general documentation.</a>
   <br>
   <br>
+  <b>Changes of version 9.8:</b> Parser accept nested commented expression with #;<br>
+  <br>
+  <br>
   <b>Changes of version 9.7:</b> now Scheme+ can be compiled in java/jakarta classes<br>
   <br>
   Support for Jakarta<br><br>
